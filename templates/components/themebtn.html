@@ -1,0 +1,25 @@
+<span id="toggleButton">Dark Mode</span>
+
+<script>
+    let isDarkMode = localStorage.getItem('isDarkMode') === 'true';
+
+    const applyTheme = (isDark) => {
+        const root = document.documentElement;
+        if (isDarkMode) {
+            root.style.setProperty('--primary', 'white');
+            root.style.setProperty('--secondary', 'black');
+        } else {
+            root.style.setProperty('--primary', 'black');
+            root.style.setProperty('--secondary', 'white');
+        }
+    };
+
+    applyTheme(isDarkMode);
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        isDarkMode = !isDarkMode;
+        applyTheme(isDarkMode);
+        document.getElementById('toggleButton').innerHTML = isDarkMode ?  'Light Mode' : 'Dark Mode';
+        localStorage.setItem('isDarkMode', isDarkMode);
+    });
+</script>

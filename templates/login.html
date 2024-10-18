@@ -3,18 +3,18 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <form method="post" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 items-center w-[90%] max-w-sm auth-form">
-        {% include 'components/heading.html' with content="Login" %}
+    <form method="post" class="loginform">
         {% csrf_token %}
+        <h1 class="heading">Login</h1>
         {% if form.non_field_errors %}
-            <ul class="errorlist">
+            <span class="error">
                 {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
+                    {{ error }}
                 {% endfor %}
-            </ul>
+            </span>
         {% endif %}
         {{ form.username }}
         {{ form.password }}
-        <button type="submit" class="w-full bg-primary text-secondary">Login</button>
+        <button type="submit">Login</button>
     </form>
 {% endblock %}
