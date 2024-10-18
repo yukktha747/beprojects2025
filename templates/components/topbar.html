@@ -1,16 +1,19 @@
-<div class="fixed bg-secondary w-[95%] border-[1px] px-2 pl-5 py-1 rounded-full text-xl top-10 left-1/2 -translate-x-1/2 flex justify-between items-center shadow-lg z-20">
-    <h1 class="font-semibold">HyperVault</h1>
-    <button id="dropdownButton" class="focus:outline-none">
-        <i class="material-icons text-3xl font-bold">arrow_drop_down</i>
-    </button>
+<div class="topbar">
+    <div class="topbar-container">
+        <h2>HyperVault</h2>
+        <button id="dropdownButton" class="dropdownbtn">
+            <i class="material-icons">arrow_drop_down</i>
+        </button>
+    </div>
 
-    <div id="dropdownMenu" class="hidden absolute bg-secondary w-[95%] top-full left-1/2 -translate-x-1/2 mt-2 border-[1px] border-gray-300 rounded-lg shadow-lg">
-        <a href="#" class="block px-4 py-3 text-gray-800 hover:bg-gray-100">Finder</a>
-        <a href="#" class="block px-4 py-3 text-gray-800 hover:bg-gray-100">Settings</a>
-        <a href="#" class="block px-4 py-3 text-gray-800 hover:bg-gray-100">Admin Panel</a>
-        <form action="{% url 'authenticate:logout' %}" method="post" class="cursor-pointer">
-            <a class="block px-4 py-3 text-gray-800 hover:bg-gray-100">Logout</a>
+    <div id="dropdownMenu" class="hidden dropdownmenu">
+        <a href="#">Finder</a>
+        <a href="#">Settings</a>
+        <a href="#">Admin Panel</a>
+        <form action="{% url 'authenticate:logout' %}" method="post">
+            <a>Logout</a>
         </form>
+        {% include 'components/themebtn.html' %}
     </div>
 </div>
 

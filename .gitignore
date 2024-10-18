@@ -98,6 +98,4 @@ docker-compose*.override.yml
 .dockerignore
 
 # Ignore staticfiles and media in production:
-static/
-media/
 node_modules/

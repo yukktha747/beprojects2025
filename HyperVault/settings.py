@@ -38,8 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authenticate',
-    'tailwind',
-    'theme',
     'django_cleanup.apps.CleanupConfig', # Keep this at the bottom only
 ]
 
@@ -120,12 +118,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 LOGOUT_REDIRECT_URL = 'login'
-
-TAILWIND_APP_NAME = 'theme'
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 STATIC_URL = 'static/'
 

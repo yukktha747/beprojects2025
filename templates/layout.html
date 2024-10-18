@@ -1,4 +1,4 @@
-{% load static tailwind_tags %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    {% tailwind_css %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>{% block title %}{% endblock %} - HyperVault</title>
 </head>
 <body>
     {% include 'components/topbar.html' %}
-    <div class="p-5">
+    <div class="container">
         {% block content %}
         {% endblock %}
     </div>
