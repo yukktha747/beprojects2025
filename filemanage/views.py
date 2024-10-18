@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse, Http404
 from .forms import FileFieldForm
 import os
 
@@ -8,30 +9,29 @@ def browse_folder(request, folder_path=''):
 
     # Check if the path exists
     if not os.path.exists(current_path):
-        return render(request, 'filemanage/browse.html', {
+        return render(request, 'browse.html', {
             'current_path': folder_path,
             'folders': [],
             'files': [],
             'error': "The specified path does not exist."
         })
-    
+
     success = ''
     # Handling multiple files from HTML
     if request.method == 'POST':
         form = FileFieldForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_files = form.cleaned_data['file_field']
+            uploaded_files = request.FILES.getlist('file_field')  # Use getlist for multiple files
             for file in uploaded_files:
                 file_path = os.path.join(current_path, file.name)
 
+                # Save the uploaded file to the current directory
                 with open(file_path, 'wb+') as destination:
                     for chunk in file.chunks():
                         destination.write(chunk)
             success = 'Files uploaded successfully!'
     else:
         form = FileFieldForm()
-
-
 
     # Getting all the files and folders
     items = os.listdir(current_path)
@@ -44,12 +44,12 @@ def browse_folder(request, folder_path=''):
     # Calculate parent directory path
     parent_path = '/'.join(folder_path.split('/')[:-1])
 
-    return render(request, 'filemanage/browse.html', {
+    return render(request, 'browse.html', {
         'current_path': folder_path,
         'folders': folder_paths,
         'files': files,
         'form': form,
         'error': None,
         'parent_path': parent_path,
-        'success':success
+        'success': success
     })

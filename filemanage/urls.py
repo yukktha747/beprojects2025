@@ -5,5 +5,5 @@ app_name = "filemanage"
 
 urlpatterns = [
     path('', browse_folder, {'folder_path': ''}, name='home'),
-    path('<path:folder_path>/', browse_folder, name='browse_folder'),
+    path('<path:folder_path>', browse_folder, name='browse_folder'),
 ]
