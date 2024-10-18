@@ -69,6 +69,7 @@ button {
     background: var(--secondary);
     color: var(--primary);
     margin-bottom: 10px;
+    border-radius: 30px;
 }
 
 .dropdownmenu > * {
