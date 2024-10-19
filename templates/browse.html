@@ -31,9 +31,13 @@
 <ul class="folder-list">
   {% for folder in folders %}
   <li>
-    <a href="{% url 'filemanage:browse_folder' folder_path|add:folder %}"
-      >{{ folder }}</a
-    >
+    <div>
+      <a href="{% url 'filemanage:browse_folder' folder_path|add:folder %}">{{ folder }}</a>
+      <form action="{% url 'filemanage:delete_item' folder_path|add:folder %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+      </form>
+    </div>
   </li>
   {% empty %}
   <li>No folders found</li>
@@ -44,11 +48,11 @@
 <ul class="file-list">
   {% for file in files %}
   <li>
-    {% if current_folder %}
-        <a href="{% url 'filemanage:view_file' folder_path=current_path file_name=file %}">{{ file }}</a>
-    {% else %}
-    <a href="" target="_blank">{{ file }}</a>
-    {% endif %}
+    <a href="">{{ file }}</a>
+    <form action="{% url 'filemanage:delete_item' folder_path|add:current_path|add:'/'|add:file %}" method="POST" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit">Delete</button>
+  </form>
   </li>
   {% empty %}
   <li>No files found</li>
