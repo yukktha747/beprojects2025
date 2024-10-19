@@ -56,7 +56,6 @@ def browse_folder(request, folder_path=''):
         'success': success
     })
 
-
 def delete_item(request, item_path):
     if request.method == 'POST':
         base_dir = os.path.expanduser('~')

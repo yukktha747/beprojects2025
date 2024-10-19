@@ -1,124 +1,193 @@
-:root {
-    --primary: black;
-    --secondary: white;
+* {
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--secondary);
-    color: var(--primary);
-}
-
-* {
-    font-family: monospace;
-    letter-spacing: 2px;
-    outline: none;
-    font-weight: 200;
-    box-sizing: border-box;
-    border: none;
-}
-
-button {
-    cursor: pointer;
-    background: var(--primary);
-    color: var(--secondary);
-}
-
-.container {
-    padding: 100px 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
 }
 
 .topbar {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    max-width: 700px;
-    padding: 5px;
-    padding-left: 10px;
-    border-radius: 50px;
-    border: 1px solid var(--primary);
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    background: var(--secondary);
-    z-index: 10;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  z-index: 50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.topbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.logo {
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.dropdownbtn {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    background: var(--primary);
-    color: var(--secondary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.navbar {
+  position: relative;
 }
 
-.dropdownmenu {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    background: var(--secondary);
-    color: var(--primary);
-    margin-bottom: 10px;
-    border-radius: 30px;
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
 }
 
-.dropdownmenu > * {
-    margin: 10px;
-    cursor: pointer;
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-.dropdownmenu a {
-    text-decoration: none;
-    color: var(--primary);
+.nav-links li a:hover {
+  color: #007bff;
 }
 
-.hidden {
-    display: none;
+.menu-toggle {
+  display: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #fff;
 }
 
-.heading {
-    width: fit-content;
-    text-align: center;
+.container {
+  padding: 20px;
+  width: 100vw;
+  max-width: 800px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.loginform {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 90%;
-    max-width: 400px;
+h2 {
+  color: #333;
+  margin: 20px 0;
 }
 
-.loginform > * {
-    width: 100%;
-    margin: 5px auto;
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-input, button {
-    padding: 10px;
-    font-size: 15px;
+.btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
-input {
-    border: 1px solid var(--primary);
-    background: var(--secondary);
+.btn:hover {
+  background-color: #0056b3;
 }
 
+.btn.delete-btn {
+  background-color: #dc3545;
+}
+
+.btn.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.success,
 .error {
-    color: red;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.folder-list,
+.file-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.folder-list li,
+.file-list li {
+  margin: 10px 0;
+}
+
+.folder-item,
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s;
+}
+
+.folder-item:hover,
+.file-item:hover {
+  background-color: #f1f1f1;
+}
+
+.folder-link,
+.file-link {
+  color: #333;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.folder-link:hover,
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.delete-form {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    background-color: #333;
+    top: 60px;
+    right: 0;
+    width: 100%;
+  }
+
+  .nav-links.active {
+    position: fixed;
+    /* top: 0; */
+    /* left: 0; */
+    /* top: 50%; */
+    /* left: 50%; */
+    /* width: fit-content; */
+    /* transform: translate(-50%, -50%); */
+    display: flex;
+    width: 100%;
+    right: 0;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 10;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
 }
