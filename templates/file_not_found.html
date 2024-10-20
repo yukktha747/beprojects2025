@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block title %}File not found!{% endblock %}
+
+{% block content %}
+File not found.
+Go back to home
+
+<a class="link" href="{% url 'filemanage:home' %}">Home</a>{% endblock %}

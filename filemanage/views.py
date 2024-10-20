@@ -59,13 +59,13 @@ def browse_folder(request, folder_path=''):
 
 
 
-def view_file(request, folder_path, file_name):
+def view_file(request, file_name, folder_path=''):
     base_dir = os.path.expanduser('~')
+    folder_path = folder_path or ''
     file_path = os.path.join(base_dir, folder_path, file_name)
-
-    # Check if the file exists
+    print(file_path)
     if not os.path.isfile(file_path):
-        return render(request, 'filemanage/browse.html', {
+        return render(request, 'file_not_found.html', {
             'current_path': folder_path,
             'error': "File not found.",
             'folders': [],
@@ -82,10 +82,11 @@ def view_file(request, folder_path, file_name):
         elif mime_type.startswith('video/'):
             return FileResponse(open(file_path, 'rb'), content_type=mime_type)
 
-    # Fallback: download the file if not a supported type
     response = HttpResponse(open(file_path, 'rb').read(), content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
     return response
+
+
 def delete_item(request, item_path):
     if request.method == 'POST':
         base_dir = os.path.expanduser('~')
