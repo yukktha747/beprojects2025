@@ -1,7 +1,9 @@
 from django import forms
 
+
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
+
 
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
@@ -16,5 +18,10 @@ class MultipleFileField(forms.FileField):
             result = [single_file_clean(data, initial)]
         return result
 
+
 class FileFieldForm(forms.Form):
     file_field = MultipleFileField()
+
+
+class CreateFolderForm(forms.Form):
+    folder_name = forms.CharField(max_length=100, label="Folder Name")

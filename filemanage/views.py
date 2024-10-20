@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404,FileResponse
 from django.urls import reverse_lazy
 import shutil
-from .forms import FileFieldForm
+from .forms import FileFieldForm, CreateFolderForm
 import os
 import mimetypes
 
@@ -20,21 +20,35 @@ def browse_folder(request, folder_path=''):
         })
 
     success = ''
+    error = ''
     # Handling multiple files from HTML
     if request.method == 'POST':
-        form = FileFieldForm(request.POST, request.FILES)
-        if form.is_valid():
-            uploaded_files = request.FILES.getlist('file_field')  # Use getlist for multiple files
-            for file in uploaded_files:
-                file_path = os.path.join(current_path, file.name)
+        if 'file_field' in request.FILES:
+            form = FileFieldForm(request.POST, request.FILES)
+            if form.is_valid():
+                uploaded_files = request.FILES.getlist('file_field')  # Use getlist for multiple files
+                for file in uploaded_files:
+                    file_path = os.path.join(current_path, file.name)
 
-                # Save the uploaded file to the current directory
-                with open(file_path, 'wb+') as destination:
-                    for chunk in file.chunks():
-                        destination.write(chunk)
-            success = 'Files uploaded successfully!'
-    else:
-        form = FileFieldForm()
+                    # Save the uploaded file to the current directory
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in file.chunks():
+                            destination.write(chunk)
+                success = 'Files uploaded successfully!'
+
+        elif 'folder_name' in request.POST:
+            folder_form = CreateFolderForm(request.POST)
+            if folder_form.is_valid():
+                new_folder_name = folder_form.cleaned_data['folder_name']
+                new_folder_path = os.path.join(current_path, new_folder_name)
+                try:
+                    os.makedirs(new_folder_path)
+                    success = f'Folder "{new_folder_name}" created successfully!'
+                except Exception as e:
+                    error = f'Error creating folder: {str(e)}'
+                    
+    form = FileFieldForm()
+    folder_form = CreateFolderForm()
 
     # Getting all the files and folders
     items = os.listdir(current_path)
@@ -52,7 +66,8 @@ def browse_folder(request, folder_path=''):
         'folders': folder_paths,
         'files': files,
         'form': form,
-        'error': None,
+        'folder_form': folder_form,
+        'error': error,
         'parent_path': parent_path,
         'success': success
     })
