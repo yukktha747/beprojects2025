@@ -5,18 +5,37 @@ import shutil
 from .forms import FileFieldForm, CreateFolderForm
 import os
 import mimetypes
+import psutil
+
+
+# Helper function to get all external drives
+def get_external_drives():
+    external_drives = []
+    for partition in psutil.disk_partitions():
+        # Check if  partition is under /media or /mnt
+        if partition.mountpoint.startswith('/media') or partition.mountpoint.startswith('/mnt'):
+            external_drives.append(partition.mountpoint)
+    return external_drives
+
+
 
 def browse_folder(request, folder_path=''):
     base_dir = os.path.expanduser('~')
     current_path = os.path.join(base_dir, folder_path)
+    drives = get_external_drives()
 
+    # Check if the current path is a drive mount point
+    if current_path in drives:
+        base_dir = current_path
+    print(drives)
     # Check if the path exists
     if not os.path.exists(current_path):
         return render(request, 'browse.html', {
             'current_path': folder_path,
             'folders': [],
             'files': [],
-            'error': "The specified path does not exist."
+            'error': "The specified path does not exist.",
+            'drives': drives,
         })
 
     success = ''
@@ -69,7 +88,8 @@ def browse_folder(request, folder_path=''):
         'folder_form': folder_form,
         'error': error,
         'parent_path': parent_path,
-        'success': success
+        'success': success,
+        'drives': drives,
     })
 
 
