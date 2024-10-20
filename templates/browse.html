@@ -13,15 +13,12 @@
   {% endif %}
 
   <h2>File Manager - {{ current_path }}</h2>
-
-  {% if error %}
-  <p class="error">{{ error }}</p>
-  {% endif %}
   <p>
     {% if parent_path %}
       <a class="link" href="{% url 'filemanage:browse_folder' parent_path %}">.. (Parent Directory)</a>
     {% else %}
       <a class="link" href="{% url 'filemanage:home' %}">(Home Directory)</a>
+
     {% endif %}
   </p>
 
@@ -47,7 +44,12 @@
     {% for file in files %}
     <li>
       <div class="file-item">
-        <a class="file-link" href="">{{ file }}</a>
+    {% if folder_path %}
+      <a href="{% url 'filemanage:view_file' folder_path=folder_path file_name=file %}" target="_blank">{{ file }}</a>
+    {% else %}
+      <a href="{% url 'filemanage:view_file' folder_path='/' file_name=file %}" target="_blank">{{ file }}</a>
+    {% endif %}
+        
         <form action="{% url 'filemanage:delete_item' folder_path|add:current_path|add:'/'|add:file %}" method="POST" class="delete-form" onsubmit="return confirmDelete();">
           {% csrf_token %}
           <button type="submit" class="btn delete-btn">Delete</button>
