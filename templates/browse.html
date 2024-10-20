@@ -15,11 +15,10 @@
 
 {% if error %}
 <p class="error">{{ error }}</p>
-{% endif %} {% if parent_path %}
+{% endif %} 
+{% if parent_path %}
 <p>
-  <a href="{% url 'filemanage:browse_folder' parent_path %}"
-    >.. (Parent Directory)</a
-  >
+  <a href="{% url 'filemanage:browse_folder' parent_path %}">.. (Parent Directory)</a>
 </p>
 {% else %}
 <p>
@@ -31,9 +30,7 @@
 <ul class="folder-list">
   {% for folder in folders %}
   <li>
-    <a href="{% url 'filemanage:browse_folder' folder_path|add:folder %}"
-      >{{ folder }}</a
-    >
+    <a href="{% url 'filemanage:browse_folder' folder %}">{{ folder }}</a>
   </li>
   {% empty %}
   <li>No folders found</li>
@@ -44,15 +41,16 @@
 <ul class="file-list">
   {% for file in files %}
   <li>
-    {% if current_folder %}
-        <a href="{% url 'filemanage:view_file' folder_path=current_path file_name=file %}">{{ file }}</a>
+    {% if folder_path %}
+      <a href="{% url 'filemanage:view_file' folder_path=folder_path file_name=file %}" target="_blank">{{ file }}</a>
     {% else %}
-    <a href="" target="_blank">{{ file }}</a>
+      <a href="{% url 'filemanage:view_file' folder_path='/' file_name=file %}" target="_blank">{{ file }}</a>
     {% endif %}
   </li>
   {% empty %}
   <li>No files found</li>
   {% endfor %}
 </ul>
+
 
 {% endblock %}

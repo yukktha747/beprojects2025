@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404,FileResponse
 from .forms import FileFieldForm
 import os
+import mimetypes
 
 def browse_folder(request, folder_path=''):
     base_dir = os.path.expanduser('~')
@@ -53,3 +54,33 @@ def browse_folder(request, folder_path=''):
         'parent_path': parent_path,
         'success': success
     })
+
+
+
+def view_file(request, folder_path, file_name):
+    base_dir = os.path.expanduser('~')
+    file_path = os.path.join(base_dir, folder_path, file_name)
+
+    # Check if the file exists
+    if not os.path.isfile(file_path):
+        return render(request, 'filemanage/browse.html', {
+            'current_path': folder_path,
+            'error': "File not found.",
+            'folders': [],
+            'files': [],
+        })
+
+    mime_type, _ = mimetypes.guess_type(file_path)
+
+    if mime_type:
+        if mime_type.startswith('image/'):
+            return FileResponse(open(file_path, 'rb'), content_type=mime_type)
+        elif mime_type == 'application/pdf':
+            return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
+        elif mime_type.startswith('video/'):
+            return FileResponse(open(file_path, 'rb'), content_type=mime_type)
+
+    # Fallback: download the file if not a supported type
+    response = HttpResponse(open(file_path, 'rb').read(), content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    return response
