@@ -1,56 +1,69 @@
 {% extends 'layout.html' %}
 {% block title %}Finder{% endblock %}
 {% block content %}
-<h2>Upload Files</h2>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %} {{ form }}
-  <button type="submit">Upload</button>
-</form>
+  <h2>Upload Files</h2>
+  <form method="post" enctype="multipart/form-data" class="upload-form">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn upload-btn">Upload</button>
+  </form>
 
-{% if success %}
-<p class="success">{{ success }}</p>
-{% endif %}
+  {% if success %}
+  <p class="success">{{ success }}</p>
+  {% endif %}
 
-<h1>File Manager - {{ current_path }}</h1>
+  <h2>File Manager - {{ current_path }}</h2>
+  <p>
+    {% if parent_path %}
+      <a class="link" href="{% url 'filemanage:browse_folder' parent_path %}">.. (Parent Directory)</a>
+    {% else %}
+      <a class="link" href="{% url 'filemanage:home' %}">(Home Directory)</a>
 
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %} 
-{% if parent_path %}
-<p>
-  <a href="{% url 'filemanage:browse_folder' parent_path %}">.. (Parent Directory)</a>
-</p>
-{% else %}
-<p>
-  <a href="{% url 'filemanage:home' %}">(Home Directory)</a>
-</p>
-{% endif %}
+    {% endif %}
+  </p>
 
-<h2>Folders</h2>
-<ul class="folder-list">
-  {% for folder in folders %}
-  <li>
-    <a href="{% url 'filemanage:browse_folder' folder %}">{{ folder }}</a>
-  </li>
-  {% empty %}
-  <li>No folders found</li>
-  {% endfor %}
-</ul>
+  <h2>Folders</h2>
+  <ul class="folder-list">
+    {% for folder in folders %}
+    <li>
+      <div class="folder-item">
+        <a class="folder-link" href="{% url 'filemanage:browse_folder' folder_path|add:folder %}">{{ folder }}</a>
+        <form action="{% url 'filemanage:delete_item' folder_path|add:folder %}" method="POST" class="delete-form" onsubmit="return confirmDelete();">
+          {% csrf_token %}
+          <button type="submit" class="btn delete-btn">Delete</button>
+        </form>
+      </div>
+    </li>
+    {% empty %}
+    <li>No folders found</li>
+    {% endfor %}
+  </ul>
 
-<h2>Files</h2>
-<ul class="file-list">
-  {% for file in files %}
-  <li>
+  <h2>Files</h2>
+  <ul class="file-list">
+    {% for file in files %}
+    <li>
+      <div class="file-item">
     {% if folder_path %}
       <a href="{% url 'filemanage:view_file' folder_path=folder_path file_name=file %}" target="_blank">{{ file }}</a>
     {% else %}
       <a href="{% url 'filemanage:view_file' folder_path='/' file_name=file %}" target="_blank">{{ file }}</a>
     {% endif %}
-  </li>
-  {% empty %}
-  <li>No files found</li>
-  {% endfor %}
-</ul>
+        
+        <form action="{% url 'filemanage:delete_item' folder_path|add:current_path|add:'/'|add:file %}" method="POST" class="delete-form" onsubmit="return confirmDelete();">
+          {% csrf_token %}
+          <button type="submit" class="btn delete-btn">Delete</button>
+        </form>
+      </div>
+    </li>
+    {% empty %}
+    <li>No files found</li>
+    {% endfor %}
+  </ul>
 
-
+<script>
+  function confirmDelete() {
+    return confirm('Are you sure you want to delete this item?');
+  }
+</script>
 {% endblock %}

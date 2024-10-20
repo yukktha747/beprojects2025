@@ -1,34 +1,18 @@
 <div class="topbar">
-    <div class="topbar-container">
-        <h2>HyperVault</h2>
-        <button id="dropdownButton" class="dropdownbtn">
-            <i class="material-icons">arrow_drop_down</i>
-        </button>
-    </div>
-
-    <div id="dropdownMenu" class="hidden dropdownmenu">
-        <a href="#">Finder</a>
-        <a href="#">Settings</a>
-        <a href="#">Admin Panel</a>
-        <form action="{% url 'authenticate:logout' %}" method="post">
-            <a>Logout</a>
-        </form>
-        {% include 'components/themebtn.html' %}
-    </div>
+  <h1 class="logo">File Manager</h1>
+  <nav class="navbar">
+    <ul class="nav-links">
+      <li><a href="{% url 'filemanage:home' %}">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="menu-toggle" onclick="toggleMenu()">&#9776;</div>
+  </nav>
 </div>
 
 <script>
-    document.getElementById('dropdownButton').addEventListener('click', function() {
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        dropdownMenu.classList.toggle('hidden');
-    });
-
-    window.addEventListener('click', function(event) {
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const dropdownButton = document.getElementById('dropdownButton');
-
-        if (!dropdownButton.contains(event.target)) {
-            dropdownMenu.classList.add('hidden');
-        }
-    });
+  function toggleMenu() {
+    const navLinks = document.querySelector(".nav-links");
+    navLinks.classList.toggle("active");
+  }
 </script>
