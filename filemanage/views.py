@@ -27,7 +27,6 @@ def browse_folder(request, folder_path=''):
     # Check if the current path is a drive mount point
     if current_path in drives:
         base_dir = current_path
-    print(drives)
     # Check if the path exists
     if not os.path.exists(current_path):
         return render(request, 'browse.html', {
@@ -70,14 +69,17 @@ def browse_folder(request, folder_path=''):
     folder_form = CreateFolderForm()
 
     q = request.GET.get('q')
-    print(current_path)
     if q:
-        items = subprocess.check_output(f'find {current_path} -iname *{q}*', shell=True, text=True).strip().split('\n')
+        items = os.popen(f'find {current_path} -iname "*{q}*"').read().split('\n')
         items = [item for item in items if item]
+
+        folders = [item[1:] for item in items if os.path.isdir(item)]
+        files = [item.replace(current_path, '') for item in items if os.path.isfile(item)]
+
     else:
         items = os.listdir(current_path)
-    folders = [item for item in items if os.path.isdir(os.path.join(current_path, item))]
-    files = [item for item in items if os.path.isfile(os.path.join(current_path, item))]
+        folders = [item for item in items if os.path.isdir(os.path.join(current_path, item))]
+        files = [item for item in items if os.path.isfile(os.path.join(current_path, item))]
 
     # Prepare folder paths for URLs
     folder_paths = [os.path.join(folder_path, folder) for folder in folders]
