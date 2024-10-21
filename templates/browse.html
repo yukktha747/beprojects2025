@@ -1,14 +1,6 @@
 {% extends 'layout.html' %}
 {% block title %}Finder{% endblock %}
 {% block content %}
-<h3>Mounted Drives</h3>
-<ul>
-    {% for drive in drives %}
-        <li>
-            <a href="{% url 'filemanage:browse_folder' drive %}">{{ drive }}</a>
-        </li>
-    {% endfor %}
-</ul>
 
 <h2>Upload Files</h2>
 <form method="post" enctype="multipart/form-data" class="upload-form">
@@ -22,6 +14,17 @@
 </form>
 {% if success %}
 <p class="success">{{ success }}</p>
+{% endif %}
+
+{% if drives %}
+<h3>Mounted Drives</h3>
+<ul>
+    {% for drive in drives %}
+        <li>
+            <a href="{% url 'filemanage:browse_folder' drive %}">{{ drive }}</a>
+        </li>
+    {% endfor %}
+</ul>
 {% endif %}
 
 <h2>File Manager - {{ current_path }}</h2>
