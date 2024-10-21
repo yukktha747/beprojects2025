@@ -1,7 +1,13 @@
 {% extends 'layout.html' %}
 {% block title %}Finder{% endblock %}
 {% block content %}
-
+<h2>Search</h2>
+<form method="get" class="upload-form">
+  <p>
+    <input name="q" type="text" value="{{q}}" required>
+  </p>
+  <button type="submit" class="btn upload-btn">Search</button>
+</form>
 <h2>Upload Files</h2>
 <form method="post" enctype="multipart/form-data" class="upload-form">
   {% csrf_token %} {{ form }}

@@ -6,6 +6,7 @@ from .forms import FileFieldForm, CreateFolderForm
 import os
 import mimetypes
 import psutil
+import subprocess
 
 
 # Helper function to get all external drives
@@ -16,7 +17,6 @@ def get_external_drives():
         if partition.mountpoint.startswith('/media') or partition.mountpoint.startswith('/mnt'):
             external_drives.append(partition.mountpoint)
     return external_drives
-
 
 
 def browse_folder(request, folder_path=''):
@@ -69,8 +69,13 @@ def browse_folder(request, folder_path=''):
     form = FileFieldForm()
     folder_form = CreateFolderForm()
 
-    # Getting all the files and folders
-    items = os.listdir(current_path)
+    q = request.GET.get('q')
+    print(current_path)
+    if q:
+        items = subprocess.check_output(f'find {current_path} -iname *{q}*', shell=True, text=True).strip().split('\n')
+        items = [item for item in items if item]
+    else:
+        items = os.listdir(current_path)
     folders = [item for item in items if os.path.isdir(os.path.join(current_path, item))]
     files = [item for item in items if os.path.isfile(os.path.join(current_path, item))]
 
@@ -81,7 +86,7 @@ def browse_folder(request, folder_path=''):
     parent_path = '/'.join(folder_path.split('/')[:-1])
 
     return render(request, 'browse.html', {
-        'current_path': folder_path,
+        'current_path': current_path,
         'folders': folder_paths,
         'files': files,
         'form': form,
@@ -90,8 +95,8 @@ def browse_folder(request, folder_path=''):
         'parent_path': parent_path,
         'success': success,
         'drives': drives,
+        'q': q or '',
     })
-
 
 
 def view_file(request, file_name, folder_path=''):
