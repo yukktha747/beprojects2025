@@ -9,6 +9,8 @@ import psutil
 import subprocess
 
 
+base_dir = os.path.expanduser('~')
+
 # Helper function to get all external drives
 def get_external_drives():
     external_drives = []
@@ -20,7 +22,6 @@ def get_external_drives():
 
 
 def browse_folder(request, folder_path=''):
-    base_dir = os.path.expanduser('~')
     current_path = os.path.join(base_dir, folder_path)
     drives = get_external_drives()
 
@@ -100,7 +101,6 @@ def browse_folder(request, folder_path=''):
 
 
 def view_file(request, file_name, folder_path=''):
-    base_dir = os.path.expanduser('~')
     folder_path = folder_path or ''
     file_path = os.path.join(base_dir, folder_path, file_name)
     print(file_path)
@@ -129,7 +129,6 @@ def view_file(request, file_name, folder_path=''):
 
 def delete_item(request, item_path):
     if request.method == 'POST':
-        base_dir = os.path.expanduser('~')
         target_path = os.path.join(base_dir, item_path)
         print(target_path)
 
