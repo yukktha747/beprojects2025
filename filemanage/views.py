@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404,FileResponse
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 import shutil
 from .forms import FileFieldForm, CreateFolderForm
 import os
@@ -18,7 +19,7 @@ def get_external_drives():
             external_drives.append(partition.mountpoint)
     return external_drives
 
-
+@login_required
 def browse_folder(request, folder_path=''):
     base_dir = os.path.expanduser('~')
     current_path = os.path.join(base_dir, folder_path)
@@ -100,7 +101,7 @@ def browse_folder(request, folder_path=''):
         'q': q or '',
     })
 
-
+@login_required
 def view_file(request, file_name, folder_path=''):
     base_dir = os.path.expanduser('~')
     folder_path = folder_path or ''
@@ -128,7 +129,7 @@ def view_file(request, file_name, folder_path=''):
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
     return response
 
-
+@login_required
 def delete_item(request, item_path):
     if request.method == 'POST':
         base_dir = os.path.expanduser('~')

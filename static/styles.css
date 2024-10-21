@@ -39,10 +39,16 @@ body {
   margin: 0;
 }
 
-.nav-links li a {
+.nav-links li a, .nav-links li button {
   color: #fff;
   text-decoration: none;
   transition: color 0.3s;
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 .nav-links li a:hover {
@@ -158,6 +164,11 @@ h2 {
 
 .delete-form {
   display: inline;
+}
+
+.loginform input, loginform button {
+  font-size: 15px;
+  padding: 10px;
 }
 
 @media (max-width: 768px) {

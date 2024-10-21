@@ -3,7 +3,7 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <form method="post" class="loginform">
+    <form method="post" class="upload-form loginform">
         {% csrf_token %}
         <h1 class="heading">Login</h1>
         {% if form.non_field_errors %}
@@ -15,6 +15,6 @@
         {% endif %}
         {{ form.username }}
         {{ form.password }}
-        <button type="submit">Login</button>
+        <button type="submit" class="btn">Login</button>
     </form>
 {% endblock %}

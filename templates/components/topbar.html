@@ -3,8 +3,12 @@
   <nav class="navbar">
     <ul class="nav-links">
       <li><a href="{% url 'filemanage:home' %}">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Contact</a></li>
+      <li>
+          <form method="post" action="{% url 'authenticate:logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+          </form>
+      </li>
     </ul>
     <div class="menu-toggle" onclick="toggleMenu()">&#9776;</div>
   </nav>
