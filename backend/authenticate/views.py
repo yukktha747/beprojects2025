@@ -7,6 +7,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import os
+from pathlib import Path
+
 
 # Custom Token Serializer to include user info
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -30,7 +33,23 @@ def register(request):
         return Response({"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
     user = User.objects.create_user(username=username, password=password)
-    return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+
+    home_path = Path.home()
+
+    user_folder_path = home_path / username
+    try:
+        user_folder_path.mkdir(exist_ok=True)
+
+        (user_folder_path / 'photos').mkdir(exist_ok=True)
+        (user_folder_path / 'documents').mkdir(exist_ok=True)
+        (user_folder_path / 'favourites').mkdir(exist_ok=True)
+        (user_folder_path / 'trash').mkdir(exist_ok=True)
+
+    except PermissionError:
+        return Response({"error": "Insufficient permissions to create folders in home directory"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({"message": "User registered successfully and folders created in home directory"}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
