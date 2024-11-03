@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0C1117;
+  --secondary: #FEFEFE;
+}
+
+* {
+  @apply outline-none;
+}
+
+nav > a, nav > button {
+  @apply duration-200 hover:bg-slate-200 text-xl p-3 w-12 h-12 flex justify-center items-center rounded-full;
+}
+
+input, textarea, select {
+  @apply bg-slate-200 p-3 rounded-xl text-primary w-64;
+}
+
+body {
+  @apply bg-primary text-secondary;
+}
+
+.btn {
+  @apply bg-red-500 text-secondary p-2 rounded-lg duration-200 hover:bg-red-500/90;
+}
+
+.link {
+  @apply text-red-500;
+}
