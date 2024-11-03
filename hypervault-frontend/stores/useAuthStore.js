@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { isLoggedIn as ili, deleteToken } from "@/calls";
+import { isLoggedIn as ili, logoutBlacklist } from "@/calls";
 
 const useAuthStore = create(set => ({
     isLoggedIn: ili(),
     login: () => set({ isLoggedIn: true }),
     logout: () => {
-        deleteToken();
+        logoutBlacklist();
         set({ isLoggedIn: false })
     },
 }));
