@@ -23,7 +23,6 @@ export default function Login() {
         if (await register(username, password)) {
             setMessage('');
             login();
-            // router.push('/auth/login');
         }
         else
             setMessage("Username already exists")

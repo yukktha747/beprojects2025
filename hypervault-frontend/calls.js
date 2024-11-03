@@ -43,10 +43,7 @@ async function register(username, password) {
 }
 
 function getToken() {
-    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-        return localStorage.getItem("token");
-    }
-    return false;
+    return localStorage.getItem("token");
 }
 
 function getRefreshToken() {
