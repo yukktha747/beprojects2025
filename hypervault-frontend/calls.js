@@ -33,6 +33,7 @@ async function register(username, password) {
 
         if (response.status === 201) {
             console.log("Registration successful");
+            login(username, password);
             return true;
         }
     } catch (error) {
@@ -42,7 +43,10 @@ async function register(username, password) {
 }
 
 function getToken() {
-    return localStorage.getItem('token');
+    if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+        return localStorage.getItem("token");
+    }
+    return false;
 }
 
 function getRefreshToken() {

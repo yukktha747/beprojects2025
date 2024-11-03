@@ -22,7 +22,8 @@ export default function Login() {
         e.preventDefault();
         if (await register(username, password)) {
             setMessage('');
-            router.push('/auth/login');
+            login();
+            // router.push('/auth/login');
         }
         else
             setMessage("Username already exists")
@@ -47,7 +48,7 @@ export default function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <button type="submit" className='btn'>Login</button>
+                    <button type="submit" className='btn'>Register</button>
                     <span className='text-red-500 text-center'>{message}</span>
                     <span className='text-center'>Already have an account? <Link className="link" href="/auth/login">Login</Link></span>
                 </form>
