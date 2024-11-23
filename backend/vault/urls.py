@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    upload_images,
+    upload_files,
     get_all_public_photos,
     add_to_favorites,
     get_user_favorites,
@@ -9,13 +9,19 @@ from .views import (
     get_user_trash,
     mark_image_as_trash,
     restore_from_trash,
-    get_user_private_images
+    get_user_private_images,
+    get_user_documents_private,
+    get_all_public_documents
 )
 
 urlpatterns = [
-    path('upload_images/', upload_images, name='upload_images'),
+    path('upload_files/', upload_files, name='upload_files'),
+    # get images and videos
     path('get_all_public_photos/', get_all_public_photos, name='get_all_public_photos'),
     path('get_user_private_images/', get_user_private_images, name='get_user_private_images'),
+    # documents
+    path('get_user_documents_private/', get_user_documents_private, name='get_user_documents_private'),
+    path('get_all_public_documents/', get_all_public_documents, name='get_all_public_documents'),
     # Favorites related
     path('add_to_favorites/', add_to_favorites, name='add_to_favorites'),
     path('get_user_favorites/', get_user_favorites, name='get_user_favorites'),
