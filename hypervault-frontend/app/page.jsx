@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/useAuthStore";
 import { isLoggedIn as ili } from "@/calls";
 import { useEffect } from "react";
+import ListSection from "@/components/ListSection";
 
 export default function Home() {
   const { isLoggedIn, setIsLoggedIn } = useAuthStore();
@@ -20,6 +21,7 @@ export default function Home() {
 
   return (
     <>
+      <ListSection />
     </>
   );
 }

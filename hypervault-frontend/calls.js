@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:8000'
+const BASE_URL = 'http://127.0.0.1:8000';
 
 async function login(username, password) {
     try {
@@ -20,7 +20,6 @@ async function login(username, password) {
     } catch (error) {
         return false;
     }
-
     return false;
 }
 
@@ -78,4 +77,155 @@ function isLoggedIn() {
     return Boolean(getToken());
 }
 
-module.exports = { login, getToken, isLoggedIn, register, logoutBlacklist }
+const authAxios = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    }
+});
+
+authAxios.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+async function uploadFiles(files, privacy = 'public') {
+    try {
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('images', file);
+        });
+        formData.append('privacy', privacy);
+
+        const response = await authAxios.post('/vault/upload_files/', formData);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPublicPhotos(limit = 10, offset = 0) {
+    try {
+        const response = await authAxios.get(`/vault/get_all_public_photos/?limit=${limit}&offset=${offset}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPrivateImages(limit = 10, offset = 0) {
+    try {
+        const response = await authAxios.get(`/vault/get_user_private_images/?limit=${limit}&offset=${offset}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPrivateDocuments(limit = 10, offset = 0) {
+    try {
+        const response = await authAxios.get(`/vault/get_user_documents_private/?limit=${limit}&offset=${offset}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPublicDocuments(limit = 10, offset = 0) {
+    try {
+        const response = await authAxios.get(`/vault/get_all_public_documents/?limit=${limit}&offset=${offset}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function addToFavorites(imageId) {
+    try {
+        const response = await authAxios.post('/vault/add_to_favorites/', { image_id: imageId });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function removeFromFavorites(imageId) {
+    try {
+        const response = await authAxios.post('/vault/remove_from_favorites/', { image_id: imageId });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getUserFavorites() {
+    try {
+        const response = await authAxios.get('/vault/get_user_favorites/');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function checkIsFavorite(imageId) {
+    try {
+        const response = await authAxios.get(`/vault/is_favorite/${imageId}/`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getUserTrash() {
+    try {
+        const response = await authAxios.get('/vault/get_user_trash/');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function markImageAsTrash(imageId) {
+    try {
+        const response = await authAxios.post('/vault/mark_image_as_trash/', { image_id: imageId });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function restoreFromTrash(imageId) {
+    try {
+        const response = await authAxios.post('/vault/restore_from_trash/', { image_id: imageId });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export {
+    // Auth exports
+    login,
+    register,
+    getToken,
+    getRefreshToken,
+    deleteToken,
+    logoutBlacklist,
+    isLoggedIn,
+    // Vault exports
+    uploadFiles,
+    getPublicPhotos,
+    getPrivateImages,
+    getPrivateDocuments,
+    getPublicDocuments,
+    addToFavorites,
+    removeFromFavorites,
+    getUserFavorites,
+    checkIsFavorite,
+    getUserTrash,
+    markImageAsTrash,
+    restoreFromTrash
+};

@@ -12,7 +12,7 @@ export default function NavLinks() {
                 <Link href="/">
                     <GrHomeRounded />
                 </Link>
-                <Link href="/">
+                <Link href="/upload">
                     <GrCloudUpload />
                 </Link>
                 <button onClick={() => logout()}>

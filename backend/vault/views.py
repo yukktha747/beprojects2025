@@ -130,7 +130,7 @@ def get_all_public_photos(request):
         {"id": image.id, "url": image.url} for image in paginated_images
     ]
 
-    return paginator.get_paginated_response({"public_photos_and_videos": public_image_urls})
+    return paginator.get_paginated_response({"files": public_image_urls})
 
 
 @api_view(['GET'])
@@ -160,7 +160,7 @@ def get_user_private_images(request):
     private_image_urls = [{"id": image.id, "url": image.url} for image in paginated_images]
 
     # Return paginated response
-    return paginator.get_paginated_response({"private_images": private_image_urls})
+    return paginator.get_paginated_response({"files": private_image_urls})
 
 
 # Private User Documents
