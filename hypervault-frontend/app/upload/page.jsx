@@ -103,7 +103,7 @@ export default function Upload() {
                     {/* Upload Button */}
                     <button
                         type="submit"
-                        className="w-full bg-red-500 text-white py-2 rounded-md"
+                        className="btn"
                     >
                         Upload
                     </button>

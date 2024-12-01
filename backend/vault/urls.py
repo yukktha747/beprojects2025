@@ -6,6 +6,7 @@ from .views import (
     get_user_favorites,
     remove_from_favorites,
     is_favorite,
+    change_file_privacy,
     get_user_trash,
     mark_image_as_trash,
     restore_from_trash,
@@ -27,6 +28,7 @@ urlpatterns = [
     path('get_user_favorites/', get_user_favorites, name='get_user_favorites'),
     path('remove_from_favorites/', remove_from_favorites, name='remove_from_favorites'),
     path('is_favorite/<int:image_id>/', is_favorite, name='is_favorite'),
+    path('change_file_privacy/', change_file_privacy, name='change_file_privacy'),
     # Trash related
     path('get_user_trash/', get_user_trash, name='get_user_trash'),
     path('mark_image_as_trash/', mark_image_as_trash, name='mark_image_as_trash'),

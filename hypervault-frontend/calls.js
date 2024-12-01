@@ -88,6 +88,7 @@ authAxios.interceptors.request.use((config) => {
     const token = getToken();
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        // config.headers['Content-Type'] = 'application/json';
     }
     return config;
 });
@@ -107,7 +108,7 @@ async function uploadFiles(files, privacy = 'public') {
     }
 }
 
-async function getPublicPhotos(limit = 10, offset = 0) {
+async function getPublicImages(limit = 10, offset = 0) {
     try {
         const response = await authAxios.get(`/vault/get_all_public_photos/?limit=${limit}&offset=${offset}`);
         return response.data;
@@ -128,7 +129,7 @@ async function getPrivateImages(limit = 10, offset = 0) {
 async function getPrivateDocuments(limit = 10, offset = 0) {
     try {
         const response = await authAxios.get(`/vault/get_user_documents_private/?limit=${limit}&offset=${offset}`);
-        return response.data;
+        return response.data.results.private_documents;
     } catch (error) {
         throw error;
     }
@@ -137,18 +138,19 @@ async function getPrivateDocuments(limit = 10, offset = 0) {
 async function getPublicDocuments(limit = 10, offset = 0) {
     try {
         const response = await authAxios.get(`/vault/get_all_public_documents/?limit=${limit}&offset=${offset}`);
-        return response.data;
+        return response.data.results.public_documents;
     } catch (error) {
         throw error;
     }
 }
 
-async function addToFavorites(imageId) {
+async function addToFavorites(id) {
     try {
-        const response = await authAxios.post('/vault/add_to_favorites/', { image_id: imageId });
+        console.log(id);
+        const response = await authAxios.post('/vault/add_to_favorites/', { "id": id });
         return response.data;
     } catch (error) {
-        throw error;
+        return false;
     }
 }
 
@@ -157,24 +159,42 @@ async function removeFromFavorites(imageId) {
         const response = await authAxios.post('/vault/remove_from_favorites/', { image_id: imageId });
         return response.data;
     } catch (error) {
-        throw error;
+        return false;
     }
 }
 
 async function getUserFavorites() {
     try {
         const response = await authAxios.get('/vault/get_user_favorites/');
-        return response.data;
+        return response.data.favorites;
     } catch (error) {
         throw error;
     }
 }
 
-async function checkIsFavorite(imageId) {
+async function checkIsFavorite(id) {
+    if (id) {
+        try {
+            const response = await authAxios.get(`/vault/is_favorite/${id}/`);
+            return response.data.is_favorite;
+        } catch (error) {
+            throw error;
+        }
+    }
+}
+
+async function changeFilePrivacy(id, privacy) {
     try {
-        const response = await authAxios.get(`/vault/is_favorite/${imageId}/`);
-        return response.data;
+        const response = await authAxios.post('/vault/change_file_privacy/', {
+            image_id: id,
+            privacy: privacy, // Should be either 'public' or 'private'
+        });
+
+        if (response.status === 200) {
+            return response.data;
+        }
     } catch (error) {
+        console.error("Error changing file privacy:", error);
         throw error;
     }
 }
@@ -182,24 +202,24 @@ async function checkIsFavorite(imageId) {
 async function getUserTrash() {
     try {
         const response = await authAxios.get('/vault/get_user_trash/');
+        return response.data.trash;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function markAsTrash(id) {
+    try {
+        const response = await authAxios.post('/vault/mark_image_as_trash/', { image_id: id });
         return response.data;
     } catch (error) {
         throw error;
     }
 }
 
-async function markImageAsTrash(imageId) {
+async function restoreFromTrash(id) {
     try {
-        const response = await authAxios.post('/vault/mark_image_as_trash/', { image_id: imageId });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
-
-async function restoreFromTrash(imageId) {
-    try {
-        const response = await authAxios.post('/vault/restore_from_trash/', { image_id: imageId });
+        const response = await authAxios.post('/vault/restore_from_trash/', { image_id: id });
         return response.data;
     } catch (error) {
         throw error;
@@ -208,24 +228,25 @@ async function restoreFromTrash(imageId) {
 
 export {
     // Auth exports
-    login,
-    register,
-    getToken,
-    getRefreshToken,
-    deleteToken,
-    logoutBlacklist,
-    isLoggedIn,
+    login, // Done
+    register, // Done
+    getToken, // Done
+    getRefreshToken, // Done
+    deleteToken, // Done
+    logoutBlacklist, // Done
+    isLoggedIn, // Done
     // Vault exports
-    uploadFiles,
-    getPublicPhotos,
-    getPrivateImages,
-    getPrivateDocuments,
-    getPublicDocuments,
-    addToFavorites,
-    removeFromFavorites,
-    getUserFavorites,
-    checkIsFavorite,
-    getUserTrash,
-    markImageAsTrash,
-    restoreFromTrash
+    uploadFiles, // Done
+    getPublicImages, // Done
+    getPrivateImages, // Done
+    getPrivateDocuments, // Done
+    getPublicDocuments, // Done
+    addToFavorites, // Done
+    removeFromFavorites, // Done
+    getUserFavorites, // Done
+    checkIsFavorite, // Done
+    changeFilePrivacy, // Done
+    getUserTrash, // Done
+    markAsTrash, // Done
+    restoreFromTrash // Done
 };

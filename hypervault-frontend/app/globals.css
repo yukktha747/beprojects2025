@@ -30,3 +30,7 @@ body {
 .link {
   @apply text-red-500;
 }
+
+.moremenu li {
+  @apply p-1 hover:bg-primary hover:text-white cursor-pointer;
+}

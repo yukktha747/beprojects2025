@@ -1,5 +1,5 @@
 from pathlib import Path
-from rest_framework.decorators import api_view, permission_classes,parser_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,11 +22,12 @@ class InfiniteScrollPagination(LimitOffsetPagination):
         default_limit (int): The default number of items per page.
         max_limit (int): The maximum number of items that can be retrieved per page.
     """
+
     default_limit = 10
-    max_limit = 50 
+    max_limit = 50
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
 def upload_files(request):
@@ -44,8 +45,8 @@ def upload_files(request):
         Response: JSON response with details of uploaded files or an error message.
     """
 
-    images = request.FILES.getlist("images") 
-    privacy = request.data.get("privacy", "public").lower()  
+    images = request.FILES.getlist("images")
+    privacy = request.data.get("privacy", "public").lower()
     user = request.user
 
     # Define the single target path for all images
@@ -55,7 +56,10 @@ def upload_files(request):
     try:
         target_path.mkdir(parents=True, exist_ok=True)
     except Exception as e:
-        return Response({"error": f"Could not create folder: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"error": f"Could not create folder: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     # Helper to determine document type
     def get_document_type(filename):
@@ -77,9 +81,11 @@ def upload_files(request):
             with open(image_path, "wb+") as destination:
                 for chunk in image.chunks():
                     destination.write(chunk)
-            
+
             # Formulate the complete URL with request information
-            image_url = request.build_absolute_uri(f"{settings.MEDIA_URL}uploads/{image.name}")
+            image_url = request.build_absolute_uri(
+                f"{settings.MEDIA_URL}uploads/{image.name}"
+            )
 
             # Determine the document type
             document_type = get_document_type(image.name)
@@ -90,18 +96,26 @@ def upload_files(request):
                 url=image_url,
                 is_in_trash=False,
                 privacy=privacy,
-                document_type=document_type  # Add document type
+                document_type=document_type,  # Add document type
             )
-            
-            saved_files.append({"id": user_image.id, "url": image_url, "document_type": document_type})
+
+            saved_files.append(
+                {"id": user_image.id, "url": image_url, "document_type": document_type}
+            )
 
         except Exception as e:
-            return Response({"error": f"Error saving file '{image.name}': {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": f"Error saving file '{image.name}': {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-    return Response({"message": "Files uploaded successfully", "files": saved_files}, status=status.HTTP_201_CREATED)
+    return Response(
+        {"message": "Files uploaded successfully", "files": saved_files},
+        status=status.HTTP_201_CREATED,
+    )
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_public_photos(request):
     """
@@ -118,9 +132,9 @@ def get_all_public_photos(request):
     """
 
     public_images = UserImage.objects.filter(
-        Q(document_type='image') | Q(document_type='video'), 
-        is_in_trash=False, 
-        privacy='public'
+        Q(document_type="image") | Q(document_type="video"),
+        is_in_trash=False,
+        privacy="public",
     )
 
     paginator = InfiniteScrollPagination()
@@ -133,7 +147,7 @@ def get_all_public_photos(request):
     return paginator.get_paginated_response({"files": public_image_urls})
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_private_images(request):
     """
@@ -150,21 +164,25 @@ def get_user_private_images(request):
     """
 
     user = request.user
-    private_images = UserImage.objects.filter(user=user, privacy='private', is_in_trash=False)
+    private_images = UserImage.objects.filter(
+        user=user, privacy="private", is_in_trash=False
+    )
 
     # Apply pagination
     paginator = InfiniteScrollPagination()
     paginated_images = paginator.paginate_queryset(private_images, request)
 
     # Serialize the data
-    private_image_urls = [{"id": image.id, "url": image.url} for image in paginated_images]
+    private_image_urls = [
+        {"id": image.id, "url": image.url} for image in paginated_images
+    ]
 
     # Return paginated response
     return paginator.get_paginated_response({"files": private_image_urls})
 
 
 # Private User Documents
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_documents_private(request):
     """
@@ -182,7 +200,9 @@ def get_user_documents_private(request):
 
     user = request.user
     private_documents = UserImage.objects.filter(
-        user=user, privacy='private', is_in_trash=False, document_type='document'
+        user=user,
+        privacy="private",
+        is_in_trash=False,  # document_type='document'
     )
 
     # Apply pagination
@@ -190,14 +210,64 @@ def get_user_documents_private(request):
     paginated_documents = paginator.paginate_queryset(private_documents, request)
 
     # Serialize data
-    private_document_urls = [{"id": doc.id, "url": doc.url} for doc in paginated_documents]
+    private_document_urls = [
+        {"id": doc.id, "url": doc.url} for doc in paginated_documents
+    ]
 
     # Return paginated response
-    return paginator.get_paginated_response({"private_documents": private_document_urls})
+    return paginator.get_paginated_response(
+        {"private_documents": private_document_urls}
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_file_privacy(request):
+    """
+    Change the privacy setting of a file.
+
+    Updates the `privacy` field of a specific file to 'public' or 'private'.
+
+    Parameters:
+        request (HttpRequest): The HTTP request containing the `image_id` and the desired `privacy`.
+
+    Returns:
+        Response: Success or error message.
+    """
+    image_id = request.data.get("image_id")
+    new_privacy = request.data.get("privacy")
+
+    print(image_id, new_privacy)
+
+    if not image_id or new_privacy not in ["public", "private"]:
+        return Response(
+            {
+                "error": "Image ID and valid privacy ('public' or 'private') are required."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        user_image = UserImage.objects.get(id=image_id, user=request.user)
+
+        # Update the privacy setting
+        user_image.privacy = new_privacy
+        user_image.save()
+
+        return Response(
+            {"message": f"File privacy changed to '{new_privacy}' successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+    except UserImage.DoesNotExist:
+        return Response(
+            {"error": "Image not found or does not belong to the user."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
 
 
 # Public Documents
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_public_documents(request):
     """
@@ -214,7 +284,8 @@ def get_all_public_documents(request):
     """
 
     public_documents = UserImage.objects.filter(
-        is_in_trash=False, privacy='public', document_type='document'
+        is_in_trash=False,
+        privacy="public",  # document_type='document'
     )
 
     # Apply pagination
@@ -222,7 +293,9 @@ def get_all_public_documents(request):
     paginated_documents = paginator.paginate_queryset(public_documents, request)
 
     # Serialize data
-    public_document_urls = [{"id": doc.id, "url": doc.url} for doc in paginated_documents]
+    public_document_urls = [
+        {"id": doc.id, "url": doc.url} for doc in paginated_documents
+    ]
 
     # Return paginated response
     return paginator.get_paginated_response({"public_documents": public_document_urls})
@@ -230,7 +303,8 @@ def get_all_public_documents(request):
 
 # Below is favorites related all functions!
 
-@api_view(['POST'])
+
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_to_favorites(request):
     """
@@ -245,28 +319,38 @@ def add_to_favorites(request):
         Response: Success or error message.
     """
 
-    image_id = request.data.get("image_id")
-
-    if not image_id:
-        return Response({"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+    image_id = request.data.get("id")
+    if image_id is None:
+        return Response(
+            {"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         user_image = UserImage.objects.get(id=image_id)
 
-        if user_image.privacy == 'private' and user_image.user != request.user:
-            return Response({"error": "You are not allowed to favorite this image"}, status=status.HTTP_403_FORBIDDEN)
+        if user_image.privacy == "private" and user_image.user != request.user:
+            return Response(
+                {"error": "You are not allowed to favorite this image"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         if Favourite.objects.filter(user=request.user, image=user_image).exists():
-            return Response({"message": "Image is already in favorites"}, status=status.HTTP_200_OK)
-        
+            return Response(
+                {"message": "Image is already in favorites"}, status=status.HTTP_200_OK
+            )
+
         # Add image to favorites
         Favourite.objects.create(user=request.user, image=user_image)
-        return Response({"message": "Image added to favorites successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Image added to favorites successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     except UserImage.DoesNotExist:
         return Response({"error": "Image not found!"}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['GET'])
+
+
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_favorites(request):
     """
@@ -283,11 +367,11 @@ def get_user_favorites(request):
 
     user = request.user
     favorites = Favourite.objects.filter(user=user)
-    favorite_images = [{"image_url": fav.image.url, "image_id": fav.image.id} for fav in favorites]
+    favorite_images = [{"url": fav.image.url, "id": fav.image.id} for fav in favorites]
     return Response({"favorites": favorite_images}, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def remove_from_favorites(request):
     """
@@ -305,18 +389,26 @@ def remove_from_favorites(request):
     image_id = request.data.get("image_id")
 
     if not image_id:
-        return Response({"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         favorite = Favourite.objects.get(user=request.user, image_id=image_id)
         favorite.delete()
-        
-        return Response({"message": "Image removed from favorites successfully"}, status=status.HTTP_200_OK)
+
+        return Response(
+            {"message": "Image removed from favorites successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     except Favourite.DoesNotExist:
-        return Response({"error": "Image not found in favorites"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"error": "Image not found in favorites"}, status=status.HTTP_404_NOT_FOUND
+        )
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def is_favorite(request, image_id):
     """
@@ -336,9 +428,8 @@ def is_favorite(request, image_id):
     return Response({"is_favorite": is_fav}, status=status.HTTP_200_OK)
 
 
-
 # Trash related everything is below
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_trash(request):
     """
@@ -356,10 +447,10 @@ def get_user_trash(request):
 
     user = request.user
     trash = UserImage.objects.filter(user=user, is_in_trash=True)
-    return Response({"trash": [image.url for image in trash]})
+    return Response({"trash": [{"url": image.url, "id": image.id} for image in trash]})
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def mark_image_as_trash(request):
     """
@@ -377,18 +468,26 @@ def mark_image_as_trash(request):
     image_id = request.data.get("image_id")
 
     if not image_id:
-        return Response({"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         user_image = UserImage.objects.get(id=image_id, user=request.user)
         user_image.is_in_trash = True
         user_image.save()
-        return Response({"message": "Image marked as trash successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Image marked as trash successfully"}, status=status.HTTP_200_OK
+        )
 
     except UserImage.DoesNotExist:
-        return Response({"error": "Image not found or does not belong to the user"}, status=status.HTTP_404_NOT_FOUND)
-    
-@api_view(['POST'])
+        return Response(
+            {"error": "Image not found or does not belong to the user"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def restore_from_trash(request):
     """
@@ -406,17 +505,25 @@ def restore_from_trash(request):
     image_id = request.data.get("image_id")
 
     if not image_id:
-        return Response({"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Image ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         user_image = UserImage.objects.get(id=image_id, is_in_trash=True)
         user_image.is_in_trash = False
         user_image.save()
 
-        return Response({"message": "Image restored from trash successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Image restored from trash successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     except UserImage.DoesNotExist:
-        return Response({"error": "Image not found or not in trash!"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"error": "Image not found or not in trash!"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
 
 
 """
