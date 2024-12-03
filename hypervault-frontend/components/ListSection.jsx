@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { FilePreviewerThumbnail } from "react-file-previewer";
+import { FaFile } from "react-icons/fa";
 import { CgMoreR } from "react-icons/cg";
 import { PiButterflyDuotone } from "react-icons/pi";
 import { addToFavorites, removeFromFavorites, checkIsFavorite, changeFilePrivacy, markAsTrash, restoreFromTrash } from "@/calls";
@@ -123,13 +124,13 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                         <div className="relative">
                             <button
                                 onClick={(event) => handleMenuButtonClick(event, file.id)}
-                                className="absolute text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-primary"
+                                className="absolute z-10 text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-primary"
                             >
                                 <CgMoreR />
                             </button>
                             <div target="_blank" className="overflow-hidden h-28 w-28">
                                 <Link href={file.url} target="_blank">
-                                    <FilePreviewerThumbnail file={{ url: file.url }} />
+                                    {["pdf", "docx", "pages", "xlsx", "numbers"].includes(getFileName(file.url).split(".").pop()) ? <FaFile className="text-8xl" /> : <FilePreviewerThumbnail key={index} file={{ url: file.url }} />}
                                 </Link>
                             </div>
                         </div>
