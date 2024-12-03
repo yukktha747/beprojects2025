@@ -19,9 +19,10 @@ export default function Upload() {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: {
-            "image/*": [],
-            "application/pdf": [],
-            "text/plain": [],
+            // "image/*": [],
+            // "application/pdf": [],
+            // "text/plain": [],
+            // "*": [],
         },
         multiple: true,
     });
@@ -68,7 +69,7 @@ export default function Upload() {
 
                     {/* Display Selected Files */}
                     {files.length > 0 && (
-                        <div className="bg-secondary p-3 text-primary rounded-md shadow-inner">
+                        <div className="bg-secondary p-3 text-primary rounded-md shadow-inner max-h-60 overflow-auto">
                             <h2 className="font-semibold mb-2">Selected Files:</h2>
                             <ul className="space-y-2">
                                 {files.map((file, index) => (

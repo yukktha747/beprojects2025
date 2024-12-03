@@ -4,6 +4,7 @@ import { FilePreviewerThumbnail } from "react-file-previewer";
 import { CgMoreR } from "react-icons/cg";
 import { PiButterflyDuotone } from "react-icons/pi";
 import { addToFavorites, removeFromFavorites, checkIsFavorite, changeFilePrivacy, markAsTrash, restoreFromTrash } from "@/calls";
+import Link from "next/link";
 
 export default function ListSection({ type, data, getMore, refreshData }) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -115,17 +116,22 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                     </ul>
                 </div>
             )}
-            <div className="flex flex-wrap gap-5">
+            {/* <div className="flex flex-wrap gap-5"> */}
+            <div className="overflow-x-hidden grid w-full text-center justify-center grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-4">
                 {data.map((file, index) => (
-                    <div key={index} className="w-28 h-28 text-center">
+                    <div key={index} className="w-28 h-36 text-center">
                         <div className="relative">
                             <button
                                 onClick={(event) => handleMenuButtonClick(event, file.id)}
-                                className="absolute text-black/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-primary"
+                                className="absolute text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-primary"
                             >
                                 <CgMoreR />
                             </button>
-                            <FilePreviewerThumbnail file={{ url: file.url }} />
+                            <div target="_blank" className="overflow-hidden h-28 w-28">
+                                <Link href={file.url} target="_blank">
+                                    <FilePreviewerThumbnail file={{ url: file.url }} />
+                                </Link>
+                            </div>
                         </div>
                         <span className="overflow-hidden whitespace-nowrap text-ellipsis text-center block">
                             {getFileName(file.url)}
