@@ -13,7 +13,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     const selectedFile = useRef(null);
     const [fav, setFav] = useState(false);
     const pathname = usePathname();
-
+    const data = data || [];
     const isTrashPage = pathname === "/trash";
 
     const handleMenuButtonClick = async (event, id) => {
