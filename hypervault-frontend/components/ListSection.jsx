@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { FilePreviewerThumbnail } from "react-file-previewer";
@@ -13,8 +11,8 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     const selectedFile = useRef(null);
     const [fav, setFav] = useState(false);
     const pathname = usePathname();
-    const data = data || [];
     const isTrashPage = pathname === "/trash";
+    const containerRef = useRef(null); // Reference for the container
 
     const handleMenuButtonClick = async (event, id) => {
         const rect = event.currentTarget.getBoundingClientRect();
@@ -28,8 +26,10 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     };
 
     function getFileName(url) {
-        const splits = url.split("/");
-        return splits[splits.length - 1];
+        if (url) {
+            const splits = url.split("/");
+            return splits[splits.length - 1];
+        }
     }
 
     const handleClickOutside = () => {
@@ -73,8 +73,20 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         refreshData();
     }
 
+    const handleScroll = () => {
+        const container = containerRef.current;
+        if (container) {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            if (scrollTop + clientHeight >= scrollHeight - 50) { // Adjust the threshold for triggering 'getMore'
+                if (getMore) {
+                    getMore();
+                }
+            }
+        }
+    };
+
     return data.length !== 0 ? (
-        <div className="m-5">
+        <div className="m-5" ref={containerRef} onScroll={handleScroll} style={{ maxHeight: "500px", overflowY: "auto" }}>
             {isMenuVisible && (
                 <div
                     className="absolute bg-white border shadow-lg text-primary moremenu"
