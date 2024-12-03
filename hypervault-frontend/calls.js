@@ -104,7 +104,7 @@ async function uploadFiles(files, privacy = 'public') {
         const response = await authAxios.post('/vault/upload_files/', formData);
         return response.data;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -113,7 +113,7 @@ async function getPublicImages(limit = 10, offset = 0) {
         const response = await authAxios.get(`/vault/get_all_public_photos/?limit=${limit}&offset=${offset}`);
         return response.data;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -122,7 +122,7 @@ async function getPrivateImages(limit = 10, offset = 0) {
         const response = await authAxios.get(`/vault/get_user_private_images/?limit=${limit}&offset=${offset}`);
         return response.data;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -131,7 +131,7 @@ async function getPrivateDocuments(limit = 10, offset = 0) {
         const response = await authAxios.get(`/vault/get_user_documents_private/?limit=${limit}&offset=${offset}`);
         return response.data.results.private_documents;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -140,7 +140,7 @@ async function getPublicDocuments(limit = 10, offset = 0) {
         const response = await authAxios.get(`/vault/get_all_public_documents/?limit=${limit}&offset=${offset}`);
         return response.data.results.public_documents;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -168,7 +168,7 @@ async function getUserFavorites() {
         const response = await authAxios.get('/vault/get_user_favorites/');
         return response.data.favorites;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -178,7 +178,7 @@ async function checkIsFavorite(id) {
             const response = await authAxios.get(`/vault/is_favorite/${id}/`);
             return response.data.is_favorite;
         } catch (error) {
-            throw error;
+            console.log(error);
         }
     }
 }
@@ -195,7 +195,7 @@ async function changeFilePrivacy(id, privacy) {
         }
     } catch (error) {
         console.error("Error changing file privacy:", error);
-        throw error;
+        console.log(error);
     }
 }
 
@@ -204,7 +204,7 @@ async function getUserTrash() {
         const response = await authAxios.get('/vault/get_user_trash/');
         return response.data.trash;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -213,7 +213,7 @@ async function markAsTrash(id) {
         const response = await authAxios.post('/vault/mark_image_as_trash/', { image_id: id });
         return response.data;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
@@ -222,7 +222,7 @@ async function restoreFromTrash(id) {
         const response = await authAxios.post('/vault/restore_from_trash/', { image_id: id });
         return response.data;
     } catch (error) {
-        throw error;
+        console.log(error);
     }
 }
 
