@@ -9,6 +9,8 @@ from .models import UserImage, Favourite
 import os
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
+from PyPDF2 import PdfReader
+from transformers import pipeline
 
 
 class InfiniteScrollPagination(LimitOffsetPagination):
@@ -27,24 +29,14 @@ class InfiniteScrollPagination(LimitOffsetPagination):
     max_limit = 50
 
 
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser])
 def upload_files(request):
     """
-    Handle file uploads from authenticated users.
-
-    Accepts multiple files and saves them in a unified 'uploads' directory.
-    Files are categorized into `image`, `video`, `document`, or `unknown` based on their extensions.
-    Records for uploaded files are stored in the `UserImage` model.
-
-    Parameters:
-        request (HttpRequest): The HTTP request containing uploaded files, privacy setting, and user details.
-
-    Returns:
-        Response: JSON response with details of uploaded files or an error message.
+    Handle file uploads from authenticated users with PDF summarization.
     """
-
     images = request.FILES.getlist("images")
     privacy = request.data.get("privacy", "public").lower()
     user = request.user
@@ -61,7 +53,9 @@ def upload_files(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    # Helper to determine document type
+    # Initialize the summarization pipeline
+    summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+
     def get_document_type(filename):
         extension = os.path.splitext(filename)[-1].lower()
         if extension in [".jpg", ".jpeg", ".png", ".gif"]:
@@ -73,6 +67,18 @@ def upload_files(request):
         else:
             return "unknown"
 
+    def generate_pdf_summary(file):
+        """Extract and summarize the contents of a PDF."""
+        try:
+            reader = PdfReader(file)
+            text = "".join(page.extract_text() for page in reader.pages)
+            summary = summarizer(text[:1024], max_length=200, min_length=30, do_sample=False)
+            
+
+            return summary[0]["summary_text"] if summary else ""
+        except Exception as e:
+            return f"Error generating summary: {e}"
+
     saved_files = []
     for image in images:
         try:
@@ -82,25 +88,32 @@ def upload_files(request):
                 for chunk in image.chunks():
                     destination.write(chunk)
 
-            # Formulate the complete URL with request information
             image_url = request.build_absolute_uri(
                 f"{settings.MEDIA_URL}uploads/{image.name}"
             )
 
-            # Determine the document type
             document_type = get_document_type(image.name)
+            summary = ""
 
-            # Save the image record in the database with privacy setting
+            if document_type == "document" and image.name.lower().endswith(".pdf"):
+                summary = generate_pdf_summary(image)
+
             user_image = UserImage.objects.create(
                 user=user,
                 url=image_url,
                 is_in_trash=False,
                 privacy=privacy,
-                document_type=document_type,  # Add document type
+                document_type=document_type,
+                summary=summary,
             )
 
             saved_files.append(
-                {"id": user_image.id, "url": image_url, "document_type": document_type}
+                {
+                    "id": user_image.id,
+                    "url": image_url,
+                    "document_type": document_type,
+                    "summary": summary,
+                }
             )
 
         except Exception as e:
@@ -113,6 +126,7 @@ def upload_files(request):
         {"message": "Files uploaded successfully", "files": saved_files},
         status=status.HTTP_201_CREATED,
     )
+
 
 
 @api_view(["GET"])
