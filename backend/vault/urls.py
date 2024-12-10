@@ -12,7 +12,10 @@ from .views import (
     restore_from_trash,
     get_user_private_images,
     get_user_documents_private,
-    get_all_public_documents
+    get_all_public_documents,
+    add_tag_to_image,
+    remove_tag_from_image,
+    search_images
 )
 
 urlpatterns = [
@@ -20,6 +23,9 @@ urlpatterns = [
     # get images and videos
     path('get_all_public_photos/', get_all_public_photos, name='get_all_public_photos'),
     path('get_user_private_images/', get_user_private_images, name='get_user_private_images'),
+    path('add-tag/', add_tag_to_image, name='add_tag_to_image'),
+    path('remove-tag/', remove_tag_from_image, name='remove_tag_from_image'),
+
     # documents
     path('get_user_documents_private/', get_user_documents_private, name='get_user_documents_private'),
     path('get_all_public_documents/', get_all_public_documents, name='get_all_public_documents'),
@@ -33,4 +39,7 @@ urlpatterns = [
     path('get_user_trash/', get_user_trash, name='get_user_trash'),
     path('mark_image_as_trash/', mark_image_as_trash, name='mark_image_as_trash'),
     path('restore_from_trash/', restore_from_trash, name='restore_from_trash'),
+    # Search
+    path('search/', search_images, name='search_images'),
+
 ]

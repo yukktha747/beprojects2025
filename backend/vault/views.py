@@ -5,12 +5,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
-from .models import UserImage, Favourite
+from .models import UserImage, Favourite,Tag
 import os
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
 from PyPDF2 import PdfReader
 from transformers import pipeline
+from django.http import JsonResponse
+import json
 
 
 class InfiniteScrollPagination(LimitOffsetPagination):
@@ -155,7 +157,7 @@ def get_all_public_photos(request):
     paginated_images = paginator.paginate_queryset(public_images, request)
 
     public_image_urls = [
-        {"id": image.id, "url": image.url} for image in paginated_images
+        {"id": image.id, "url": image.url, "summary":image.summary} for image in paginated_images
     ]
 
     return paginator.get_paginated_response({"files": public_image_urls})
@@ -188,7 +190,7 @@ def get_user_private_images(request):
 
     # Serialize the data
     private_image_urls = [
-        {"id": image.id, "url": image.url} for image in paginated_images
+        {"id": image.id, "url": image.url,"summary":image.summary} for image in paginated_images
     ]
 
     # Return paginated response
@@ -225,7 +227,7 @@ def get_user_documents_private(request):
 
     # Serialize data
     private_document_urls = [
-        {"id": doc.id, "url": doc.url} for doc in paginated_documents
+        {"id": doc.id, "url": doc.url,"summary":doc.summary} for doc in paginated_documents
     ]
 
     # Return paginated response
@@ -308,7 +310,7 @@ def get_all_public_documents(request):
 
     # Serialize data
     public_document_urls = [
-        {"id": doc.id, "url": doc.url} for doc in paginated_documents
+        {"id": doc.id, "url": doc.url,"summary":doc.summary} for doc in paginated_documents
     ]
 
     # Return paginated response
@@ -538,6 +540,120 @@ def restore_from_trash(request):
             {"error": "Image not found or not in trash!"},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_tag_to_image(request):
+    try:
+        image_id = request.data.get('image_id')
+        tag_name = request.data.get('tag')
+
+        if not image_id or not tag_name:
+            return Response({'error': 'Both image_id and tag are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            image = UserImage.objects.get(id=image_id, user=request.user)
+        except UserImage.DoesNotExist:
+            return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        tag, created = Tag.objects.get_or_create(name=tag_name)
+
+        image.tags.add(tag)
+
+        return Response({
+            'message': 'Tag added to image successfully.',
+            'image_id': image_id,
+            'tag': tag.name,
+            'tag_created': created
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        # Generic error handling
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def remove_tag_from_image(request):
+    try:
+        # Extract data from request
+        image_id = request.data.get('image_id')
+        tag_name = request.data.get('tag')
+
+        # Validate inputs
+        if not image_id or not tag_name:
+            return Response({'error': 'Both image_id and tag are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the image
+        try:
+            image = UserImage.objects.get(id=image_id, user=request.user)
+        except UserImage.DoesNotExist:
+            return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch the tag
+        try:
+            tag = Tag.objects.get(name=tag_name)
+        except Tag.DoesNotExist:
+            return Response({'error': f'Tag "{tag_name}" does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Remove the tag from the image
+        if tag in image.tags.all():
+            image.tags.remove(tag)
+            return Response({
+                'message': 'Tag removed from image successfully.',
+                'image_id': image_id,
+                'tag': tag_name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': f'Tag "{tag_name}" is not associated with this image.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        # Generic error handling
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def search_images(request):
+    try:
+        # Extract search parameters
+        query = request.GET.get('query', '')  # The search keyword
+        document_type = request.GET.get('document_type')  # Optional filter for document type (image, video, document)
+
+        # Ensure query is provided
+        if not query:
+            return Response({'error': 'Search query is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Build query for images and documents
+        search_criteria = Q(summary__icontains=query) | Q(tags__name__icontains=query) | Q(url__icontains=query)
+
+        # Filter images based on the document type if provided
+        if document_type:
+            search_criteria &= Q(document_type=document_type)
+
+        # Fetch images matching the criteria
+        images = UserImage.objects.filter(search_criteria, user=request.user).distinct()
+
+        # Prepare the response
+        result = [
+            {
+                'id': image.id,
+                'url': image.url,
+                'document_type': image.document_type,
+                'summary': image.summary,
+                'tags': [tag.name for tag in image.tags.all()],
+                'privacy': image.privacy
+            }
+            for image in images
+        ]
+
+        return Response({'results': result}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        # Generic error handling
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 """
