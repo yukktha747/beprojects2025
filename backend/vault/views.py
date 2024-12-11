@@ -610,7 +610,29 @@ def remove_tag_from_image(request):
     except Exception as e:
         # Generic error handling
         return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_tags_for_image(request):
+    try:
+        image_id = request.query_params.get('image_id')
+        if not image_id:
+            return Response({'error': 'image_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            image = UserImage.objects.get(id=image_id, user=request.user)
+        except UserImage.DoesNotExist:
+            return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
+        tags = image.tags.all()
+        tag_names = [tag.name for tag in tags]
+
+        return Response({
+            'image_id': image_id,
+            'tags': tag_names
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(["GET"])

@@ -4,7 +4,7 @@ import { FilePreviewerThumbnail } from "react-file-previewer";
 import { FaFile } from "react-icons/fa";
 import { CgMoreR } from "react-icons/cg";
 import { PiButterflyDuotone } from "react-icons/pi";
-import { addToFavorites, removeFromFavorites, checkIsFavorite, changeFilePrivacy, markAsTrash, restoreFromTrash } from "@/calls";
+import { addToFavorites, removeFromFavorites, checkIsFavorite, changeFilePrivacy, markAsTrash, restoreFromTrash, addTag, removeTag, getTags } from "@/calls";
 import Link from "next/link";
 
 export default function ListSection({ type, data, getMore, refreshData }) {
@@ -12,6 +12,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const selectedFile = useRef(null);
     const [fav, setFav] = useState(false);
+    const [tags, setTags] = useState([]);
     const pathname = usePathname();
     const isTrashPage = pathname === "/trash";
     const containerRef = useRef(null);
@@ -21,25 +22,32 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         const rect = event.currentTarget.getBoundingClientRect();
         const menuWidth = 300;
         const screenWidth = window.innerWidth;
-    
+
         const availableSpaceRight = screenWidth - rect.right;
-    
+
         let adjustedMenuPosition = {
             x: rect.left,
             y: rect.bottom,
         };
-    
+
         if (availableSpaceRight < menuWidth) {
             adjustedMenuPosition.x = rect.left - menuWidth;
         }
-    
+
         selectedFile.current = id;
         setSummary(summary);
         setFav(await checkFav(id));
+
+        try {
+            const fileTags = await getTags(id);
+            setTags(fileTags);
+        } catch (error) {
+            alert("Failed to fetch tags. Please try again.");
+        }
+
         setIsMenuVisible(true);
         setMenuPosition(adjustedMenuPosition);
     };
-    
 
     function getFileName(url) {
         if (url) {
@@ -89,6 +97,33 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         refreshData();
     }
 
+    async function handleAddTag() {
+        const newTag = prompt("Enter the tag you want to add:");
+        if (newTag) {
+            try {
+                await addTag(selectedFile.current, newTag);
+                setTags((prevTags) => [...prevTags, newTag]);
+            } catch (error) {
+                alert("Failed to add tag. Please try again.");
+            }
+        }
+    }
+
+    async function handleRemoveTag() {
+        const tagToRemove = prompt("Enter the tag you want to remove:");
+        if (tagToRemove) {
+            try {
+                const res = await removeTag(selectedFile.current, tagToRemove);
+                if (res)
+                    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+                else
+                    alert("Tag is not present");
+            } catch (error) {
+                alert("Failed to remove tag. Please try again.");
+            }
+        }
+    }
+
     const handleScroll = () => {
         const container = containerRef.current;
         if (container) {
@@ -115,24 +150,20 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                     <ul className="list-none m-0 duration-300 text-sm">
                         <>
                             <li className="hover:!bg-white hover:!text-primary">{summary && <span>Summary: {summary}</span>}</li>
-                            <li
-                                onClick={() =>
-                                    fav
-                                        ? removeFav(selectedFile.current)
-                                        : addFav(selectedFile.current)
-                                }
-                            >
+                            <li className="hover:cursor-pointer" onClick={() => (fav ? removeFav(selectedFile.current) : addFav(selectedFile.current))}>
                                 {fav ? "Remove from favorites" : "Add to favorites"}
                             </li>
                             {type && (
-                                <li onClick={() => handleChangeFilePrivacy(selectedFile.current)}>Mark {`${type == 'public' ? 'private' : 'public'}`}</li>
+                                <li className="hover:cursor-pointer" onClick={() => handleChangeFilePrivacy(selectedFile.current)}>Mark {`${type == 'public' ? 'private' : 'public'}`}</li>
                             )}
-                            <li onClick={() => isTrashPage ? handleRestore(selectedFile.current) : handleTrashIt(selectedFile.current)}>{isTrashPage ? "Restore" : "Trash it"}</li>
+                            <li className="hover:cursor-pointer" onClick={() => (isTrashPage ? handleRestore(selectedFile.current) : handleTrashIt(selectedFile.current))}>{isTrashPage ? "Restore" : "Trash it"}</li>
+                            <li className="hover:!bg-white hover:!text-primary">Tags: {tags.join(", ") || "No tags"}</li>
+                            <li className="hover:cursor-pointer" onClick={handleAddTag}>Add tag</li>
+                            <li className="hover:cursor-pointer" onClick={handleRemoveTag}>Remove tag</li>
                         </>
                     </ul>
                 </div>
             )}
-            {/* <div className="flex flex-wrap gap-5"> */}
             <div className="overflow-x-hidden grid w-full text-center justify-center grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-4">
                 {data.map((file, index) => (
                     <div key={index} className="w-28 h-36 text-center">

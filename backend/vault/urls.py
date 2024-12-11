@@ -15,7 +15,8 @@ from .views import (
     get_all_public_documents,
     add_tag_to_image,
     remove_tag_from_image,
-    search_images
+    get_tags_for_image,
+    search_images,
 )
 
 urlpatterns = [
@@ -25,7 +26,7 @@ urlpatterns = [
     path('get_user_private_images/', get_user_private_images, name='get_user_private_images'),
     path('add-tag/', add_tag_to_image, name='add_tag_to_image'),
     path('remove-tag/', remove_tag_from_image, name='remove_tag_from_image'),
-
+    path('get-tags/', get_tags_for_image, name='get_tags_for_image'),
     # documents
     path('get_user_documents_private/', get_user_documents_private, name='get_user_documents_private'),
     path('get_all_public_documents/', get_all_public_documents, name='get_all_public_documents'),

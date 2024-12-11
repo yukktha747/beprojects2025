@@ -246,6 +246,43 @@ async function search(query, documentType = null) {
     }
 }
 
+async function addTag(id, tag) {
+    try {
+        const response = await authAxios.post('/vault/add-tag/', {
+            image_id: id,
+            tag: tag,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding tag to image:", error);
+        return false;
+    }
+}
+
+async function removeTag(id, tag) {
+    try {
+        const response = await authAxios.post('/vault/remove-tag/', {
+            image_id: id,
+            tag: tag,
+        });
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function getTags(id) {
+    try {
+        const response = await authAxios.get('/vault/get-tags/', {
+            params: { image_id: id },
+        });
+        return response.data.tags;
+    } catch (error) {
+        console.error("Error getting tags for image:", error);
+        return [];
+    }
+}
+
 export {
     // Auth exports
     login, // Done
@@ -269,5 +306,9 @@ export {
     getUserTrash, // Done
     markAsTrash, // Done
     restoreFromTrash, // Done
-    search,
+    search, // Done
+    // Tagging functions
+    addTag, // New
+    removeTag, // New
+    getTags, // New
 };
