@@ -9,6 +9,7 @@ export default function Upload() {
     const [files, setFiles] = useState([]);
     const [privacy, setPrivacy] = useState("public");
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     // Handle file selection via dropzone
@@ -34,11 +35,17 @@ export default function Upload() {
             return;
         }
         try {
-            await uploadFiles(files, privacy);
-            setMessage("Files uploaded successfully!");
+            setLoading(true);
+            const res = await uploadFiles(files, privacy);
+            setLoading(false);
+            if (res)
+                setMessage("Files uploaded successfully!");
+            else
+                setMessage("Upload failed. Try again.");
             setFiles([]);
             setPrivacy("public");
         } catch (error) {
+            setLoading(false);
             setMessage("Upload failed. Try again.");
         }
     };
@@ -55,9 +62,8 @@ export default function Upload() {
                     {/* Dropzone */}
                     <div
                         {...getRootProps()}
-                        className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-primary ${
-                            isDragActive ? "bg-secondary" : "bg-secondary"
-                        }`}
+                        className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-primary ${isDragActive ? "bg-secondary" : "bg-secondary"
+                            }`}
                     >
                         <input {...getInputProps()} />
                         {isDragActive ? (
@@ -104,19 +110,19 @@ export default function Upload() {
                     {/* Upload Button */}
                     <button
                         type="submit"
-                        className="btn"
+                        className={`btn ${loading && '!bg-red-500/70'}`}
+                        disabled={loading}
                     >
-                        Upload
+                        {loading ? (<div className="w-6 h-6 flex justify-self-center border-[1px] border-t-white border-b-white/50 rounded-full animate-spin" />) : <>Upload</>}
                     </button>
 
                     {/* Message */}
                     {message && (
                         <span
-                            className={`text-center font-semibold ${
-                                message.includes("successfully")
+                            className={`text-center font-semibold ${message.includes("successfully")
                                     ? "text-green-500"
                                     : "text-red-500"
-                            }`}
+                                }`}
                         >
                             {message}
                         </span>

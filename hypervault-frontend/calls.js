@@ -105,6 +105,7 @@ async function uploadFiles(files, privacy = 'public') {
         return response.data;
     } catch (error) {
         console.log(error);
+        return false;
     }
 }
 
@@ -138,6 +139,7 @@ async function getPrivateDocuments(limit = 10, offset = 0) {
 async function getPublicDocuments(limit = 10, offset = 0) {
     try {
         const response = await authAxios.get(`/vault/get_all_public_documents/?limit=${limit}&offset=${offset}`);
+        console.log(response.data.results);
         return response.data.results.public_documents;
     } catch (error) {
         console.log(error);
@@ -226,6 +228,24 @@ async function restoreFromTrash(id) {
     }
 }
 
+async function search(query, documentType = null) {
+    try {
+        const params = {
+            query: query,
+        };
+
+        if (documentType) {
+            params.document_type = documentType;
+        }
+
+        const response = await authAxios.get('/vault/search/', { params });
+        return response.data.results;
+    } catch (error) {
+        console.error("Error searching images:", error);
+        return [];
+    }
+}
+
 export {
     // Auth exports
     login, // Done
@@ -248,5 +268,6 @@ export {
     changeFilePrivacy, // Done
     getUserTrash, // Done
     markAsTrash, // Done
-    restoreFromTrash // Done
+    restoreFromTrash, // Done
+    search,
 };

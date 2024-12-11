@@ -14,18 +14,32 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     const [fav, setFav] = useState(false);
     const pathname = usePathname();
     const isTrashPage = pathname === "/trash";
-    const containerRef = useRef(null); // Reference for the container
+    const containerRef = useRef(null);
+    const [summary, setSummary] = useState(null);
 
-    const handleMenuButtonClick = async (event, id) => {
+    const handleMenuButtonClick = async (event, id, summary) => {
         const rect = event.currentTarget.getBoundingClientRect();
-        setMenuPosition({
+        const menuWidth = 300;
+        const screenWidth = window.innerWidth;
+    
+        const availableSpaceRight = screenWidth - rect.right;
+    
+        let adjustedMenuPosition = {
             x: rect.left,
             y: rect.bottom,
-        });
+        };
+    
+        if (availableSpaceRight < menuWidth) {
+            adjustedMenuPosition.x = rect.left - menuWidth;
+        }
+    
         selectedFile.current = id;
+        setSummary(summary);
         setFav(await checkFav(id));
         setIsMenuVisible(true);
+        setMenuPosition(adjustedMenuPosition);
     };
+    
 
     function getFileName(url) {
         if (url) {
@@ -91,7 +105,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         <div className="m-5" ref={containerRef} onScroll={handleScroll} style={{ maxHeight: "500px", overflowY: "auto" }}>
             {isMenuVisible && (
                 <div
-                    className="absolute bg-white border shadow-lg text-primary moremenu"
+                    className="absolute bg-white border shadow-lg text-primary moremenu max-w-md"
                     style={{
                         top: menuPosition.y,
                         left: menuPosition.x,
@@ -100,6 +114,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                 >
                     <ul className="list-none m-0 duration-300 text-sm">
                         <>
+                            <li className="hover:!bg-white hover:!text-primary">{summary && <span>Summary: {summary}</span>}</li>
                             <li
                                 onClick={() =>
                                     fav
@@ -123,8 +138,8 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                     <div key={index} className="w-28 h-36 text-center">
                         <div className="relative">
                             <button
-                                onClick={(event) => handleMenuButtonClick(event, file.id)}
-                                className="absolute z-10 text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-primary"
+                                onClick={(event) => handleMenuButtonClick(event, file.id, file?.summary || null)}
+                                className="absolute z-10 text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-red-500"
                             >
                                 <CgMoreR />
                             </button>
