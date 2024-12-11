@@ -174,7 +174,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                             >
                                 <CgMoreR />
                             </button>
-                            <div target="_blank" className="overflow-hidden h-28 w-28">
+                            <div target="_blank" className="overflow-hidden h-28 w-28 flex justify-center">
                                 <Link href={file.url} target="_blank">
                                     {["pdf", "docx", "pages", "xlsx", "numbers"].includes(getFileName(file.url).split(".").pop()) ? <FaFile className="text-8xl" /> : <FilePreviewerThumbnail key={index} file={{ url: file.url }} />}
                                 </Link>
