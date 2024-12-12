@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import uuid
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)  # Tag name should be unique
@@ -33,3 +33,14 @@ class Favourite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.image }"
+    
+
+class Group(models.Model):
+    name = models.CharField(max_length=100)  # Group name
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)  # Owner of the group
+    images = models.ManyToManyField(UserImage, related_name="groups")  # Images in the group
+    shareable_link = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)  # Unique link for sharing
+    is_active = models.BooleanField(default=True)  # Toggle for enabling/disabling access to the group
+
+    def __str__(self):
+        return f"{self.name} - {self.owner.username}"

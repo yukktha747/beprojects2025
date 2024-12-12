@@ -5,14 +5,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from django.conf import settings
-from .models import UserImage, Favourite,Tag
+from .models import UserImage, Favourite,Tag, Group
 import os
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
 from PyPDF2 import PdfReader
 from transformers import pipeline
-from django.http import JsonResponse
-import json
+from django.shortcuts import get_object_or_404
 
 
 class InfiniteScrollPagination(LimitOffsetPagination):
@@ -678,11 +677,95 @@ def search_images(request):
 
 
 
+# Groups for sharing related below. Hahahaha
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_group(request):
+    """
+    Create a group of images/documents with a unique shareable link.
+    """
+    name = request.data.get("name")
+    image_ids = request.data.get("image_ids", [])  # List of UserImage IDs is needed.... ensure its a list
+    user = request.user
+
+    if not name or not image_ids:
+        return Response(
+            {"error": "Group name and image IDs are required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Fetch images belonging to the user that is private and fetching all the public images
+    images = UserImage.objects.filter(
+        Q(privacy='public') | Q(Q(privacy='private') & Q(user=user)),
+        id__in=image_ids
+    )
+    if not images.exists():
+        return Response(
+            {"error": "No valid images found for the provided IDs."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    # Create the group
+    group = Group.objects.create(name=name, owner=user)
+    group.images.set(images)
+
+    return Response(
+        {
+            "message": "Group created successfully.",
+            "shareable_link": str(group.shareable_link),
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+@api_view(["GET"])
+def access_group(request, shareable_link):
+    """
+    Access a group's images/documents using its shareable link.
+    """
+    group = get_object_or_404(Group, shareable_link=shareable_link, is_active=True)
+
+    images_data = [
+        {
+            "id": image.id,
+            "url": image.url,
+            "document_type": image.document_type,
+            "summary": image.summary,
+        }
+        for image in group.images.all()
+    ]
+
+    return Response(
+        {"group_name": group.name, "images": images_data},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def toggle_group_access(request, group_id):
+    """
+    Activate or deactivate the shareable link for a group.
+    """
+    user = request.user
+    group = get_object_or_404(Group, id=group_id, owner=user)
+
+    # Toggle the active status
+    group.is_active = not group.is_active
+    group.save()
+
+    status_message = "activated" if group.is_active else "deactivated"
+    return Response(
+        {"message": f"Group link {status_message}."},
+        status=status.HTTP_200_OK,
+    )
+
+
+
 """
 /list (include pagination) - get_public_photos, get_private_photos, get_public_documents, get_private_documents - done
 /upload (support for multiple files) - done
 /edit (editing name, access specifier like public private)
-/share (my brain isn't working to think about this, try figuring out something)
+/share done at last.. Thanks GPT!
 /delete
 /search (support ai search feature)
 /backup (use web3.storage and setup backup for monthly or weekly bases, find hash of every backup file and if there are no changes the hash will be the same so do not upload the backup file to ipfs)

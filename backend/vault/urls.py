@@ -17,6 +17,10 @@ from .views import (
     remove_tag_from_image,
     get_tags_for_image,
     search_images,
+    create_group,
+    access_group,
+    toggle_group_access
+
 )
 
 urlpatterns = [
@@ -42,5 +46,10 @@ urlpatterns = [
     path('restore_from_trash/', restore_from_trash, name='restore_from_trash'),
     # Search
     path('search/', search_images, name='search_images'),
+    #group
+    path("groups/create/", create_group, name="create_group"),
+    path("groups/access/<uuid:shareable_link>/", access_group, name="access_group"),
+    path("groups/toggle/<int:group_id>/", toggle_group_access, name="toggle_group_access"),
+
 
 ]
