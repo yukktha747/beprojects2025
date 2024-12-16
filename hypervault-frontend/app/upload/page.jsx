@@ -57,7 +57,7 @@ export default function Upload() {
     return (
         <div className="w-full min-h-screen flex justify-center items-center">
             <div className="w-full max-w-md flex flex-col gap-5 rounded-lg p-6">
-                <h1 className="text-3xl font-bold text-center text-secondary">Upload Files</h1>
+                <h1 className="text-3xl font-bold text-center">Upload Files</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     {/* Dropzone */}
                     <div

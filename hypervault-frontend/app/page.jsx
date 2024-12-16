@@ -67,14 +67,14 @@ export default function Home() {
           <div className="flex flex-wrap justify-center w-full">
             <button
               onClick={() => setType("public")}
-              className={`p-2 flex-1 border-b-[1px] ${type === "public" ? "border-slate-300" : "border-slate-500"
+              className={`p-2 flex-1 border-b-[1px] ${type === "public" ? "border-red-500" : "border-slate-500"
                 }`}
             >
               Public
             </button>
             <button
               onClick={() => setType("private")}
-              className={`p-2 flex-1 border-b-[1px] ${type === "private" ? "border-slate-300" : "border-slate-500"
+              className={`p-2 flex-1 border-b-[1px] ${type === "private" ? "border-red-500" : "border-slate-500"
                 }`}
             >
               Private

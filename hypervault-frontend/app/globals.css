@@ -23,6 +23,10 @@ body {
   @apply bg-primary text-secondary;
 }
 
+body.light {
+  @apply bg-white !text-primary;
+}
+
 .btn {
   @apply bg-red-500 text-secondary p-2 rounded-lg duration-200 hover:bg-red-500/90;
 }
@@ -32,5 +36,5 @@ body {
 }
 
 .moremenu li {
-  @apply p-1 hover:bg-primary hover:text-white cursor-pointer;
+  @apply p-1 hover:bg-red-500 hover:text-white cursor-pointer;
 }

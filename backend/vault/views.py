@@ -551,7 +551,7 @@ def add_tag_to_image(request):
             return Response({'error': 'Both image_id and tag are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            image = UserImage.objects.get(id=image_id, user=request.user)
+            image = UserImage.objects.get(id=image_id)
         except UserImage.DoesNotExist:
             return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -585,7 +585,7 @@ def remove_tag_from_image(request):
 
         # Fetch the image
         try:
-            image = UserImage.objects.get(id=image_id, user=request.user)
+            image = UserImage.objects.get(id=image_id)
         except UserImage.DoesNotExist:
             return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -619,7 +619,7 @@ def get_tags_for_image(request):
         if not image_id:
             return Response({'error': 'image_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            image = UserImage.objects.get(id=image_id, user=request.user)
+            image = UserImage.objects.get(id=image_id)
         except UserImage.DoesNotExist:
             return Response({'error': 'Image not found or you do not have permission to access it.'}, status=status.HTTP_404_NOT_FOUND)
         tags = image.tags.all()
