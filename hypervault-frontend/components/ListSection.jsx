@@ -17,14 +17,14 @@ export default function ListSection({ type, data, getMore, refreshData }) {
     const isTrashPage = pathname === "/trash";
     const containerRef = useRef(null);
     const [summary, setSummary] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentFileIndex, setCurrentFileIndex] = useState(0);
 
-    const handleMenuButtonClick = async (event, id, summary) => {
+    const handleMenuButtonClick = async (event, id, summary, index) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const menuWidth = 300;
         const screenWidth = window.innerWidth;
-
         const availableSpaceRight = screenWidth - rect.right;
-
         let adjustedMenuPosition = {
             x: rect.left,
             y: rect.bottom,
@@ -47,6 +47,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
 
         setIsMenuVisible(true);
         setMenuPosition(adjustedMenuPosition);
+        setCurrentFileIndex(index); // Set index of clicked file
     };
 
     function getFileName(url) {
@@ -128,7 +129,7 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         const container = containerRef.current;
         if (container) {
             const { scrollTop, scrollHeight, clientHeight } = container;
-            if (scrollTop + clientHeight >= scrollHeight - 50) { // Adjust the threshold for triggering 'getMore'
+            if (scrollTop + clientHeight >= scrollHeight - 50) {
                 if (getMore) {
                     getMore();
                 }
@@ -136,61 +137,105 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         }
     };
 
-    return data.length !== 0 ? (
-        <div className="m-5" ref={containerRef} onScroll={handleScroll} style={{ maxHeight: "500px", overflowY: "auto" }}>
-            {isMenuVisible && (
-                <div
-                    className="absolute bg-white border shadow-lg text-primary moremenu max-w-md"
-                    style={{
-                        top: menuPosition.y,
-                        left: menuPosition.x,
-                        zIndex: 1000,
-                    }}
-                >
-                    <ul className="list-none m-0 duration-300 text-sm">
-                        <>
-                            <li className="hover:!bg-white hover:!text-primary">{summary && <span>Summary: {summary}</span>}</li>
-                            <li className="hover:cursor-pointer" onClick={() => (fav ? removeFav(selectedFile.current) : addFav(selectedFile.current))}>
-                                {fav ? "Remove from favorites" : "Add to favorites"}
-                            </li>
-                            {type && (
-                                <li className="hover:cursor-pointer" onClick={() => handleChangeFilePrivacy(selectedFile.current)}>Mark {`${type == 'public' ? 'private' : 'public'}`}</li>
+    const excludedExtensions = [
+        "jpg", "jpeg", "png", "gif", "bmp", "svg", "webp", "mp4", "avi", "mov", "mkv", "webm"
+    ];
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const nextFile = () => {
+        if (currentFileIndex < data.length - 1) {
+            setCurrentFileIndex(currentFileIndex + 1);
+        }
+    };
+
+    const prevFile = () => {
+        if (currentFileIndex > 0) {
+            setCurrentFileIndex(currentFileIndex - 1);
+        }
+    };
+
+    // Handle download from the modal
+    const handleDownload = () => {
+        const fileUrl = data[currentFileIndex]?.url;
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = getFileName(fileUrl); // Use the file's name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    return (
+        <>
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-slate-600/50 text-white backdrop-blur-lg p-5 rounded-lg w-full max-w-4xl h-full overflow-y-auto">
+                        <div className="flex justify-between items-center text-secondary">
+                            <button onClick={prevFile}>
+                                Previous
+                            </button>
+                            <button onClick={closeModal}>
+                                Close
+                            </button>
+                            <button onClick={nextFile}>
+                                Next
+                            </button>
+                        </div>
+                        <div className="flex justify-center mt-4">
+                            {!excludedExtensions.includes(getFileName(data[currentFileIndex]?.url).split(".").pop()) ? (
+                                <FaFile className="text-8xl" />
+                            ) : (
+                                <FilePreviewerThumbnail file={{ url: data[currentFileIndex]?.url }} />
                             )}
-                            <li className="hover:cursor-pointer" onClick={() => (isTrashPage ? handleRestore(selectedFile.current) : handleTrashIt(selectedFile.current))}>{isTrashPage ? "Restore" : "Trash it"}</li>
-                            <li className="hover:!bg-white hover:!text-primary">Tags: {tags.join(", ") || "No tags"}</li>
-                            <li className="hover:cursor-pointer" onClick={handleAddTag}>Add tag</li>
-                            <li className="hover:cursor-pointer" onClick={handleRemoveTag}>Remove tag</li>
-                        </>
-                    </ul>
+                        </div>
+                        <div className="mt-4">
+                            <h2>{getFileName(data[currentFileIndex]?.url)}</h2>
+                            <p>Summary: {data[currentFileIndex]?.summary}</p>
+                            <p>Tags: {tags.join(", ") || "No tags"}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-5 my-5">
+                            <Link target="_blank" href={data[currentFileIndex]?.url} className="btn">View</Link>
+                            <button onClick={handleDownload} className="btn">Download</button>
+                        </div>
+                    </div>
                 </div>
             )}
-            <div className="overflow-x-hidden grid w-full text-center justify-center grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-4">
-                {data.map((file, index) => (
-                    <div key={index} className="w-28 h-36 text-center">
-                        <div className="relative">
-                            <button
-                                onClick={(event) => handleMenuButtonClick(event, file.id, file?.summary || null)}
-                                className="absolute z-10 text-red-500/50 right-1 top-1 text-2xl duration-300 cursor-pointer hover:text-red-500"
-                            >
-                                <CgMoreR />
-                            </button>
-                            <div target="_blank" className="overflow-hidden h-28 w-28 flex justify-center">
-                                <Link href={file.url} target="_blank">
-                                    {["pdf", "docx", "pages", "xlsx", "numbers"].includes(getFileName(file.url).split(".").pop()) ? <FaFile className="text-8xl" /> : <FilePreviewerThumbnail key={index} file={{ url: file.url }} />}
-                                </Link>
+            <div className="m-5 overflow-y-auto h-fit" ref={containerRef} onScroll={handleScroll}>
+                <div className="overflow-x-hidden grid w-full text-center justify-center grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-4">
+                    {data.map((file, index) => (
+                        <div key={index} className="w-28 h-36 text-center">
+                            <div className="relative">
+                                {/* Red button for options */}
+                                <div
+                                    onClick={(event) => handleMenuButtonClick(event, file.id, file.summary, index)}
+                                    className="absolute top-1 right-1 p-1 hover:text-red-500 text-red-500/60 rounded-full cursor-pointer"
+                                >
+                                    <CgMoreR />
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        setCurrentFileIndex(index);
+                                        setIsModalOpen(true);
+                                    }}
+                                    className="cursor-pointer overflow-hidden h-28 w-28 flex justify-center"
+                                >
+                                    {!excludedExtensions.includes(getFileName(file.url).split(".").pop()) ? (
+                                        <FaFile className="text-8xl" />
+                                    ) : (
+                                        <FilePreviewerThumbnail key={index} file={{ url: file.url }} />
+                                    )}
+                                </div>
                             </div>
+                            <span className="overflow-hidden whitespace-nowrap text-ellipsis text-center block">
+                                {getFileName(file.url)}
+                            </span>
                         </div>
-                        <span className="overflow-hidden whitespace-nowrap text-ellipsis text-center block">
-                            {getFileName(file.url)}
-                        </span>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
-    ) : (<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-col items-center">
-            <PiButterflyDuotone className="text-[20rem] text-red-500" />
-            <h2 className="text-center text-3xl font-bold">Empty</h2>
-        </div>
-    </div>);
+        </>
+    );
 }
