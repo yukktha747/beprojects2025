@@ -12,6 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from PyPDF2 import PdfReader
 from transformers import pipeline
 from django.shortcuts import get_object_or_404
+import time
 
 
 class InfiniteScrollPagination(LimitOffsetPagination):
@@ -74,8 +75,6 @@ def upload_files(request):
             reader = PdfReader(file)
             text = "".join(page.extract_text() for page in reader.pages)
             summary = summarizer(text[:1024], max_length=200, min_length=30, do_sample=False)
-            
-
             return summary[0]["summary_text"] if summary else ""
         except Exception as e:
             return f"Error generating summary: {e}"
@@ -83,14 +82,22 @@ def upload_files(request):
     saved_files = []
     for image in images:
         try:
-            # Save each file in the "uploads" folder
             image_path = target_path / image.name
+            
+            # Check if file already exists
+            if image_path.exists():
+                # Rename the file by appending a unique identifier (timestamp or counter)
+                base, extension = os.path.splitext(image.name)
+                new_name = f"{base}_{int(time.time())}{extension}"
+                image_path = target_path / new_name
+            
+            # Save the file
             with open(image_path, "wb+") as destination:
                 for chunk in image.chunks():
                     destination.write(chunk)
 
             image_url = request.build_absolute_uri(
-                f"{settings.MEDIA_URL}uploads/{image.name}"
+                f"{settings.MEDIA_URL}uploads/{image_path.name}"
             )
 
             document_type = get_document_type(image.name)
@@ -127,8 +134,6 @@ def upload_files(request):
         {"message": "Files uploaded successfully", "files": saved_files},
         status=status.HTTP_201_CREATED,
     )
-
-
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
