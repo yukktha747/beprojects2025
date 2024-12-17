@@ -168,8 +168,8 @@ export default function ListSection({ type, data, getMore, refreshData }) {
         document.body.removeChild(link);
     };
 
-    return (
-        <>
+    return data.length !== 0 ?
+        (<>
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-slate-600/50 text-white backdrop-blur-lg p-5 rounded-lg w-full max-w-4xl h-full overflow-y-auto">
@@ -204,6 +204,32 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                 </div>
             )}
             <div className="m-5 overflow-y-auto h-fit" ref={containerRef} onScroll={handleScroll}>
+            {isMenuVisible && (
+                <div
+                    className="absolute bg-white border shadow-lg text-primary moremenu max-w-md"
+                    style={{
+                        top: menuPosition.y,
+                        left: menuPosition.x,
+                        zIndex: 1000,
+                    }}
+                >
+                    <ul className="list-none m-0 duration-300 text-sm">
+                        <>
+                            <li className="hover:!bg-white hover:!text-primary">{summary && <span>Summary: {summary}</span>}</li>
+                            <li className="hover:cursor-pointer" onClick={() => (fav ? removeFav(selectedFile.current) : addFav(selectedFile.current))}>
+                                {fav ? "Remove from favorites" : "Add to favorites"}
+                            </li>
+                            {type && (
+                                <li className="hover:cursor-pointer" onClick={() => handleChangeFilePrivacy(selectedFile.current)}>Mark {`${type == 'public' ? 'private' : 'public'}`}</li>
+                            )}
+                            <li className="hover:cursor-pointer" onClick={() => (isTrashPage ? handleRestore(selectedFile.current) : handleTrashIt(selectedFile.current))}>{isTrashPage ? "Restore" : "Trash it"}</li>
+                            <li className="hover:!bg-white hover:!text-primary">Tags: {tags.join(", ") || "No tags"}</li>
+                            <li className="hover:cursor-pointer" onClick={handleAddTag}>Add tag</li>
+                            <li className="hover:cursor-pointer" onClick={handleRemoveTag}>Remove tag</li>
+                        </>
+                    </ul>
+                </div>
+            )}
                 <div className="overflow-x-hidden grid w-full text-center justify-center grid-cols-3 sm:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-4">
                     {data.map((file, index) => (
                         <div key={index} className="w-28 h-36 text-center">
@@ -237,5 +263,12 @@ export default function ListSection({ type, data, getMore, refreshData }) {
                 </div>
             </div>
         </>
+    ) : (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="flex flex-col items-center">
+                <PiButterflyDuotone className="text-[20rem] text-red-500" />
+                <h2 className="text-center text-3xl font-bold">Empty</h2>
+            </div>
+        </div>
     );
 }
