@@ -1,0 +1,109 @@
+import torch
+from PIL import Image
+from transformers import CLIPProcessor, CLIPModel
+
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+image = Image.open("/content/drive/MyDrive/WIN_20240731_22_53_49_Pro.jpg")
+inputs = processor(text=["clear", "distorted"], images=image, return_tensors="pt", padding=True)
+
+with torch.no_grad():
+    outputs = model(**inputs)
+    logits = outputs.logits_per_image
+    probs = logits.softmax(dim=1)
+
+print("Real vs Fake Probabilities:", probs)
+import os
+import torch
+from PIL import Image, UnidentifiedImageError
+import requests
+from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay, classification_report
+import matplotlib.pyplot as plt
+from transformers import CLIPProcessor, CLIPModel
+
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+
+def load_image(image_path_or_url):
+    try:
+        if image_path_or_url.startswith(("http://", "https://")):
+            return Image.open(requests.get(image_path_or_url, stream=True).raw).convert("RGB")
+        elif os.path.isfile(image_path_or_url):
+            return Image.open(image_path_or_url).convert("RGB")
+        else:
+            raise ValueError(f"Invalid image path or URL: {image_path_or_url}")
+    except (UnidentifiedImageError, ValueError) as e:
+        print(f"Error loading image: {e}")
+        return None
+
+
+def predict_fake_or_real(image_path_or_url):
+    """Predict if an image is 'real' or 'fake'."""
+    image = load_image(image_path_or_url)
+    if image is None:
+        return None
+
+    text_descriptions = ["natural image", "distorted image"]
+
+    inputs = processor(text=text_descriptions, images=image, return_tensors="pt", padding=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits_per_image
+        probs = logits.softmax(dim=1)
+
+    predicted_index = probs.argmax(dim=1).item()
+    return text_descriptions[predicted_index]
+
+
+def classify_single_image(image_path_or_url):
+    print("Performing inference on image...")
+    prediction = predict_fake_or_real(image_path_or_url)
+    if prediction:
+        label = "real" if prediction == "natural image" else "fake"
+        print(f"Prediction: The image is classified as '{label}'.")
+    else:
+        print("Unable to classify the image. Please check the input path or URL.")
+
+
+def evaluate_dataset(real_folder, fake_folder):
+    y_true, y_pred = [], []
+
+    print(f"Evaluating real images in folder: {real_folder}")
+    for file in os.listdir(real_folder):
+        image_path = os.path.join(real_folder, file)
+        if os.path.isfile(image_path):
+            prediction = predict_fake_or_real(image_path)
+            if prediction:
+                y_true.append("real")
+                y_pred.append("real" if prediction == "natural image" else "fake")
+
+    print(f"Evaluating fake images in folder: {fake_folder}")
+    for file in os.listdir(fake_folder):
+        image_path = os.path.join(fake_folder, file)
+        if os.path.isfile(image_path):
+            prediction = predict_fake_or_real(image_path)
+            if prediction:
+                y_true.append("fake")
+                y_pred.append("real" if prediction == "natural image" else "fake")
+
+    return y_true, y_pred
+
+
+
+real_folder = '/content/drive/MyDrive/real'
+fake_folder = '/content/drive/MyDrive/fake'
+y_true, y_pred = evaluate_dataset(real_folder, fake_folder)
+
+accuracy = accuracy_score(y_true, y_pred)
+print(f"Accuracy: {accuracy * 100:.2f}%\n")
+print("Classification Report:")
+print(classification_report(y_true, y_pred, target_names=["real", "fake"]))
+
+cm = confusion_matrix(y_true, y_pred, labels=["real", "fake"])
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["real", "fake"])
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix")
+plt.show()
+
