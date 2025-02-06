@@ -148,5 +148,3 @@ streamlit run frontend.py
     - Update dataset labels using the `label_update.py` script provided in this repository.
     - Calculate class weights using the `weights.py` script and update `data.yaml` accordingly.
     - You can download datasets from [Roboflow Universe](https://universe.roboflow.com/) and customize them.
-
-### Enjoy training your YOLOv5 model! 🚀
