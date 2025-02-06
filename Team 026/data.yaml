@@ -1,0 +1,6 @@
+train: /content/drive/MyDrive/Dataset/combined/images/train
+val: /content/drive/MyDrive/Dataset/combined/images/val
+
+nc: 8
+names: ['Bulb', 'Keyboard', 'Mobile', 'Mouse', 'Printer', 'Battery', 'Camera', 'Laptop']
+weights: [53.08490566037736, 13.147196261682243, 7.214102564102564, 18.819397993311036, 3.6898360655737705, 6.946913580246914, 8.889415481832543, 5.379541108986616]
