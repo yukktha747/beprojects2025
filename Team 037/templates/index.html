@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deepfake Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h1 class="text-2xl font-bold mb-6 text-center">Deepfake Detection</h1>
+
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Upload Video</label>
+                <input type="file" name="video" accept=".mp4,.avi,.mov" 
+                       class="block w-full text-sm text-gray-500
+                       file:mr-4 file:py-2 file:px-4
+                       file:rounded-full file:border-0
+                       file:text-sm file:font-semibold
+                       file:bg-violet-50 file:text-violet-700
+                       hover:file:bg-violet-100">
+            </div>
+
+            <button type="submit" 
+                    class="w-full bg-violet-600 text-white py-2 rounded-md hover:bg-violet-700 transition-colors">
+                Detect Deepfake
+            </button>
+        </form>
+
+        {% if input_video %}
+        <div class="mt-6 grid grid-cols-2 gap-4">
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Original Video</h2>
+                <video controls class="w-full rounded-md">
+                    <source src="{{ url_for('uploaded_file', filename=original_video) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div>
+                <h2 class="text-lg font-semibold mb-2">Processed Video</h2>
+                <img id="processed-video" src="{{ url_for('process_video_stream_route', filename=input_video) }}" 
+                     class="w-full rounded-md border">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
