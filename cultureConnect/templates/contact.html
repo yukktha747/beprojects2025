@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact - Culture Connect</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" style="font-size: 28px;" href="/">Culture Connect</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse pt-3" id="navbarNav" style="margin-left: 15px;">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('about') }}" style="font-size: 18px; color: white;">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('contact') }}" style="font-size: 18px; color: white;">Contact</a>
+            </li>
+          </ul>
+          <div class="dropdown">
+            <a
+              class="btn btn-secondary dropdown-toggle"
+              href="#"
+              role="button"
+              id="profileDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person-circle"></i>
+            </a>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="profileDropdown"
+            >
+              <li class="dropdown-item">
+                <strong>Name:</strong> {{ session.get('user_name', 'Guest')
+                }}<br />
+                <strong>Email:</strong> {{ session.get('email', 'Not Logged
+                In') }}
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#bookingsModal"
+                >
+                  Show Bookings
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <h1>Contact Information</h1>
+
+      <h2>Aditi, Aparna, and Anusha's Contact Details</h2>
+      <p>
+        If you have any questions or feedback regarding the Culture Connect
+        project, feel free to reach out to any of the developers. We're always
+        open to suggestions and new opportunities!
+      </p>
+
+      <h3>Contact Information:</h3>
+      <ul>
+        <li>
+          <strong>Aditi's LinkedIn:</strong>
+          <a href="https://www.linkedin.com/in/aditi-10085929b" target="_blank"
+            >linkedin.com/in/aditi-10085929b</a
+          >
+        </li>
+        <li>
+          <strong>Aditi's GitHub:</strong>
+          <a href="https://github.com/Aditi07hooda" target="_blank"
+            >github.com/Aditi07hooda</a
+          >
+        </li>
+        <li>
+          <strong>Aditi's Portfolio:</strong>
+          <a href="https://portfolio-cyan-ten-57.vercel.app/" target="_blank"
+            >portfolio-cyan-ten-57.vercel.app</a
+          >
+        </li>
+
+        <li>
+          <strong>Aparna's LinkedIn:</strong>
+          <a href="https://www.linkedin.com/in/aparna" target="_blank"
+            >linkedin.com/in/aparna</a
+          >
+        </li>
+        <li>
+          <strong>Aparna's GitHub:</strong>
+          <a href="https://github.com/aparna" target="_blank"
+            >github.com/aparna</a
+          >
+        </li>
+        <li>
+          <strong>Aparna's Portfolio:</strong>
+          <a href="https://aparna-portfolio.com" target="_blank"
+            >aparna-portfolio.com</a
+          >
+        </li>
+
+        <li>
+          <strong>Anusha's LinkedIn:</strong>
+          <a href="https://www.linkedin.com/in/anusha" target="_blank"
+            >linkedin.com/in/anusha</a
+          >
+        </li>
+        <li>
+          <strong>Anusha's GitHub:</strong>
+          <a href="https://github.com/anusha" target="_blank"
+            >github.com/anusha</a
+          >
+        </li>
+        <li>
+          <strong>Anusha's Portfolio:</strong>
+          <a href="https://anusha-portfolio.com" target="_blank"
+            >anusha-portfolio.com</a
+          >
+        </li>
+      </ul>
+
+      <h3>Internship Experience:</h3>
+      <ul>
+        <li>
+          <strong>Aditi:</strong> 365Build Technologies, Software Development
+          Intern (Aug 2024 – Feb 2025)
+        </li>
+        <li>
+          <strong>Aparna:</strong> Tech Solutions, Backend Developer Intern (Jun
+          2023 – Aug 2023)
+        </li>
+        <li>
+          <strong>Anusha:</strong> Airport Authority of India, Software
+          Developer Intern (Nov 2023 – Dec 2023)
+        </li>
+      </ul>
+    </div>
+
+    <div
+      class="modal fade"
+      id="bookingsModal"
+      tabindex="-1"
+      aria-labelledby="bookingsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingsModalLabel">Your Bookings</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Place</th>
+                  <th>Check-In</th>
+                  <th>Check-Out</th>
+                  <th>Guests</th>
+                  <th>Total Price</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <!-- Booking rows will be dynamically injected here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .querySelector("[data-bs-target='#bookingsModal']")
+        .addEventListener("click", function () {
+          fetch("/bookings", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const bookingsTableBody =
+                document.getElementById("bookingsTableBody");
+              bookingsTableBody.innerHTML = ""; // Clear existing rows
+              if (data.length > 0) {
+                data.forEach((booking, index) => {
+                  const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${booking.place_name}</td>
+                    <td>${booking.check_in_date}</td>
+                    <td>${booking.check_out_date}</td>
+                    <td>${booking.guests}</td>
+                    <td>${booking.total_price}</td>
+                  </tr>`;
+                  bookingsTableBody.insertAdjacentHTML("beforeend", row);
+                });
+              } else {
+                bookingsTableBody.innerHTML = `<tr><td colspan="6" class="text-center">No bookings found.</td></tr>`;
+              }
+            })
+            .catch((error) => console.error("Error fetching bookings:", error));
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
