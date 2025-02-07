@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ place['name'] }} Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" style="font-size: 28px" href="/"
+          >Culture Connect</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse pt-3"
+          id="navbarNav"
+          style="margin-left: 15px"
+        >
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('about') }}"
+                style="font-size: 18px; color: white"
+                >About</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('contact') }}"
+                style="font-size: 18px; color: white"
+                >Contact</a
+              >
+            </li>
+          </ul>
+          <div class="dropdown">
+            <a
+              class="btn btn-secondary dropdown-toggle"
+              href="#"
+              role="button"
+              id="profileDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-person-circle"></i>
+            </a>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="profileDropdown"
+            >
+              <li class="dropdown-item">
+                <strong>Name:</strong> {{ session.get('user_name', 'Guest')
+                }}<br />
+                <strong>Email:</strong> {{ session.get('email', 'Not Logged In')
+                }}
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#bookingsModal"
+                >
+                  Show Bookings
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('auth.logout') }}"
+                  >Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container_place mt-4">
+      <div class="row">
+        <div class="col-md-6">
+          <h1>{{ place['name'] }}</h1>
+          <p><strong>Location:</strong> {{ place['Location'] }}</p>
+          <p><strong>Type:</strong> {{ place['Type'] }}</p>
+          <p><strong>Activities:</strong> {{ place['Activities'] }}</p>
+          <p><strong>Best Season:</strong> {{ place['Best Season'] }}</p>
+          <p><strong>Description:</strong> {{ place['description'] }}</p>
+          <p><strong>Festival:</strong> {{ place['festival'] }}</p>
+          <p>
+            <strong>No of People Visited:</strong> {{ place['No of People
+            Visited'] }}
+          </p>
+          <p>
+            <strong>Price per Night:</strong> Rs. {{ place['price per night'] }}
+          </p>
+          <p><strong>Rating:</strong> {{ place['Rating'] }}</p>
+          <a href="{{ url_for('index') }}" class="btn btn-secondary"
+            >Back to Home</a
+          >
+          <button
+            type="button"
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#bookingModal"
+          >
+            Book Now
+          </button>
+        </div>
+        <div class="col-md-6">
+          <img
+            src="{{ place['image'] }}"
+            class="img-fluid"
+            alt="{{ place['name'] }}"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-4 mt-3">
+      <h2>Similar Places</h2>
+      <div class="row">
+        {% for similar_place in similar_places %}
+        <div class="col-md-3 mb-4">
+          <div class="card">
+            <img
+              src="{{ similar_place['image'] }}"
+              class="card-img-top"
+              alt="{{ similar_place['name'] }}"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ similar_place['name'] }}</h5>
+              <p class="card-text">
+                <strong>Location:</strong> {{ similar_place['Location'] }}<br />
+                <strong>Type:</strong> {{ similar_place['Type'] }}<br />
+                <strong>Price:</strong> Rs. {{ similar_place['price per night']
+                }}<br />
+                <strong>Rating:</strong> {{ similar_place['Rating'] }}<br />
+              </p>
+              <a
+                href="{{ url_for('page_detail', place_id=similar_place['place_id']) }}"
+                class="btn btn-primary"
+                >View Details</a
+              >
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Book {{ place['name'] }}</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="bookingForm">
+              <input
+                type="hidden"
+                id="userId"
+                value="{{ session['user_id'] }}"
+              />
+              <input
+                type="hidden"
+                id="placeId"
+                value="{{ place['place_id'] }}"
+              />
+              <input type="hidden" id="placeName" value="{{ place['name'] }}" />
+              <label>Check-in Date:</label>
+              <input
+                type="date"
+                id="checkInDate"
+                class="form-control mb-2"
+                required
+              />
+              <label>Check-out Date:</label>
+              <input
+                type="date"
+                id="checkOutDate"
+                class="form-control mb-2"
+                required
+              />
+              <label>Guests:</label>
+              <input
+                type="number"
+                id="guests"
+                class="form-control mb-2"
+                min="1"
+                required
+              />
+              <label>Total Price:</label>
+              <input
+                type="text"
+                id="totalPrice"
+                class="form-control mb-2"
+                readonly
+              />
+              <button type="submit" class="btn btn-primary">
+                Confirm Booking
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="bookingsModal"
+      tabindex="-1"
+      aria-labelledby="bookingsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingsModalLabel">Your Bookings</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Place</th>
+                  <th>Check-In</th>
+                  <th>Check-Out</th>
+                  <th>Guests</th>
+                  <th>Total Price</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <!-- Booking rows will be dynamically injected here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Enter Card Details</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="card-container"></div>
+            <button id="card-button" class="btn btn-primary mt-3">
+              Pay Now
+            </button>
+            <div id="payment-status-container" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      type="text/javascript"
+      src="https://sandbox.web.squarecdn.com/v1/square.js"
+    ></script>
+    <script>
+      const checkInDateInput = document.getElementById("checkInDate");
+      const checkOutDateInput = document.getElementById("checkOutDate");
+      const guestsInput = document.getElementById("guests");
+      const totalPriceInput = document.getElementById("totalPrice");
+
+      // Event listeners to recalculate total price
+      checkInDateInput.addEventListener("change", calculateTotalPrice);
+      checkOutDateInput.addEventListener("change", calculateTotalPrice);
+      guestsInput.addEventListener("input", calculateTotalPrice);
+
+      function calculateTotalPrice() {
+        const pricePerNight = {{ place['price per night'] }}; // From template
+        const guests = parseInt(guestsInput.value) || 0;
+
+        const checkInDate = new Date(checkInDateInput.value);
+        const checkOutDate = new Date(checkOutDateInput.value);
+        const days = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
+
+        if (days > 0 && guests > 0) {
+          const totalPrice = guests * pricePerNight * days;
+          totalPriceInput.value = totalPrice; // Set calculated price
+        } else {
+          totalPriceInput.value = ""; // Clear if invalid
+        }
+      }
+      const cardButton = document.getElementById("card-button");
+
+      document
+      .getElementById("bookingForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent form submission
+        const bookingModal = bootstrap.Modal.getInstance(
+          document.getElementById("bookingModal")
+        );
+        bookingModal.hide();
+
+        const paymentModal = new bootstrap.Modal(
+          document.getElementById("paymentModal")
+        );
+        paymentModal.show();
+      });
+
+      // Initialize Square Payment
+      const appId = "sandbox-sq0idb-14VEStbdCPQRs3GrUEwfvA";
+      const locationId = "LDW4T5FTAD5XT";
+      
+      async function initializeCard(payments) {
+        const card = await payments.card();
+        await card.attach('#card-container');
+        return card;
+      }
+    
+      async function initializeCard() {
+        if (!window.Square) {
+          throw new Error('Square.js failed to load properly');
+        }
+        const payments = window.Square.payments(appId, locationId);
+        let card;
+        try {
+          card = await initializeCard(payments);
+        } catch (e) {
+          console.error('Initializing Card failed', e);
+          return;
+        }
+      }
+
+      async function submitPayment(token) {
+        const data = {
+          source_id: token,
+          place_id: document.getElementById("placeId").value,
+          place_name: document.getElementById("placeName").value,
+          check_in_date: document.getElementById("checkInDate").value,
+          check_out_date: document.getElementById("checkOutDate").value,
+          total_price: document.getElementById("totalPrice").value,
+          source_id: token
+        };
+
+        const response = await fetch("/book", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          alert("Booking successful!");
+          location.reload();
+        } else {
+          alert("Booking failed!");
+        }
+      }
+
+      initializeCard();
+    </script>
+    <script>
+      document
+        .querySelector("[data-bs-target='#bookingsModal']")
+        .addEventListener("click", function () {
+          fetch("/bookings", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const bookingsTableBody =
+                document.getElementById("bookingsTableBody");
+              bookingsTableBody.innerHTML = ""; // Clear existing rows
+              if (data.length > 0) {
+                data.forEach((booking, index) => {
+                  const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${booking.place_name}</td>
+                    <td>${booking.check_in_date}</td>
+                    <td>${booking.check_out_date}</td>
+                    <td>${booking.guests}</td>
+                    <td>${booking.total_price}</td>
+                  </tr>`;
+                  bookingsTableBody.insertAdjacentHTML("beforeend", row);
+                });
+              } else {
+                bookingsTableBody.innerHTML = `<tr><td colspan="6" class="text-center">No bookings found.</td></tr>`;
+              }
+            })
+            .catch((error) => console.error("Error fetching bookings:", error));
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
