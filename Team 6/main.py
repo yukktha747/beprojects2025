@@ -9,6 +9,7 @@ Original file is located at
 
 pip install tensorflow==2.15.1
 
+
 import tensorflow as tf
 print("Is GPU available:", tf.config.list_physical_devices('GPU'))
 from google.colab import files
