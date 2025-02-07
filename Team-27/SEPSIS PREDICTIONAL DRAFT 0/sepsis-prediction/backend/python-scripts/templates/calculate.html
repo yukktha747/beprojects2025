@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Sepsis Risk Calculator</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form id="calculatorForm" method="POST" action="{{ url_for('predict') }}">
+                <!-- Demographics -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Demographics</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for field, props in features.items() if field in ['age', 'gender', 'weight_kg', 'bmi'] %}
+                            <div class="mb-3">
+                                <label for="{{ field }}" class="form-label">{{ props.description }}</label>
+                                {% if props.get('options') %}
+                                    <select class="form-select" id="{{ field }}" name="{{ field }}" required>
+                                        <option value="">Select {{ props.description }}</option>
+                                        {% for option in props.options %}
+                                            <option value="{{ option }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="{{ field }}" 
+                                           name="{{ field }}"
+                                           step="any"
+                                           min="{{ props.range[0] }}"
+                                           max="{{ props.range[1] }}"
+                                           required>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Vital Signs -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Vital Signs</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for field, props in features.items() if field in ['heart_rate', 'respiratory_rate', 'systolic_bp', 'diastolic_bp', 'temperature', 'spo2'] %}
+                            <div class="mb-3">
+                                <label for="{{ field }}" class="form-label">{{ props.description }}</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="{{ field }}" 
+                                       name="{{ field }}"
+                                       step="any"
+                                       min="{{ props.range[0] }}"
+                                       max="{{ props.range[1] }}"
+                                       required>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Lab Values -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Laboratory Values</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for field, props in features.items() if field in ['wbc_count', 'hemoglobin', 'platelet_count', 'creatinine', 'lactate', 'bilirubin'] %}
+                            <div class="mb-3">
+                                <label for="{{ field }}" class="form-label">{{ props.description }}</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="{{ field }}" 
+                                       name="{{ field }}"
+                                       step="any"
+                                       min="{{ props.range[0] }}"
+                                       max="{{ props.range[1] }}"
+                                       required>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Clinical Assessment -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Clinical Assessment</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for field, props in features.items() if field in ['mental_status', 'gcs_score'] %}
+                            <div class="mb-3">
+                                <label for="{{ field }}" class="form-label">{{ props.description }}</label>
+                                {% if props.get('options') %}
+                                    <select class="form-select" id="{{ field }}" name="{{ field }}" required>
+                                        <option value="">Select {{ props.description }}</option>
+                                        {% for option in props.options %}
+                                            <option value="{{ option }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% else %}
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="{{ field }}" 
+                                           name="{{ field }}"
+                                           step="any"
+                                           min="{{ props.range[0] }}"
+                                           max="{{ props.range[1] }}"
+                                           required>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Key Markers -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Key Markers</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for field, props in features.items() if field in ['procalcitonin', 'crp'] %}
+                            <div class="mb-3">
+                                <label for="{{ field }}" class="form-label">{{ props.description }}</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="{{ field }}" 
+                                       name="{{ field }}"
+                                       step="any"
+                                       min="{{ props.range[0] }}"
+                                       max="{{ props.range[1] }}"
+                                       required>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Calculate Risk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
