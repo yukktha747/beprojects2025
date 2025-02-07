@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>Cardio Care</title>
+
+  <!-- slider stylesheet -->
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css" />
+
+  <!-- font awesome style -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700|Roboto:400,700&display=swap" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="static/css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="static/css/responsive.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="hero_area">
+    <!-- header section strats -->
+    <header class="header_section">
+     
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+          <a class="navbar-brand" href="index.html">
+            <img src="static/images/l.webp" alt="">
+            <span>
+              CardioCare
+            </span>
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="d-flex  flex-column flex-lg-row align-items-center w-100 justify-content-between">
+              <ul class="navbar-nav  ">
+                <li class="nav-item active">
+                  <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/about"> About </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/contactus">Cardio Care Details</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/predict"> Predict Heart Disease</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </nav>
+      </div>
+    </header>
+    <!-- end header section -->
+ 
+
+  <!-- about section -->
+  <section class="about_section layout_padding">
+    <div class="container">
+
+
+      <div class="custom_heading-container ">
+        <h1>
+          How we Started the Study 
+        </h1>
+      </div>
+
+      
+      <div class="container">
+        <div class="custom_heading-container ">
+          <h3>
+            WHO - Coronary artery disease
+          </h3>
+        </div>
+  
+        <div class="img-box">
+          <img src="/static/images/cta.webp"  height="300px" width="800px" alt="">
+        </div>
+        <div class="detail-box">
+          <p align="justify">
+            Cardiovascular diseases (CVDs) are the leading cause of death globally.
+            An estimated 17.9 million people died from CVDs in 2019, representing 32% of all global deaths. Of these deaths, 85% were due to heart attack and stroke.
+            Over three quarters of CVD deaths take place in low- and middle-income countries.
+            Out of the 17 million premature deaths (under the age of 70) due to noncommunicable diseases in 2019, 38% were caused by CVDs.
+            Most cardiovascular diseases can be prevented by addressing behavioural risk factors such as tobacco use, unhealthy diet and obesity, physical inactivity and harmful use of alcohol.
+            It is important to detect cardiovascular disease as early as possible so that management with counselling and medicines can begin.s
+          </p>
+         
+          <br><br>
+
+         <div class="container">
+        <div class="custom_heading-container ">
+          <h3>
+           Dataset We have used <a href="https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset"> Heart.csv</a>
+          </h3>
+        </div>
+  
+        <div class="img-box">
+          <img src="/static/images/UCi.png"  height="300px" width="400px" alt="">
+        </div>
+        <div class="detail-box">
+          <p align="justify">
+            This data set dates from 1988 and consists of four databases: Cleveland, Hungary, Switzerland, and Long Beach V. It contains 76 attributes, including the predicted attribute, but all published experiments refer to using a subset of 14 of them. The "target" field refers to the presence of heart disease in the patient. It is integer valued 0 = no disease and 1 = disease.
+            Attribute Information:
+
+age
+sex
+chest pain type (4 values)
+resting blood pressure
+serum cholestoral in mg/dl
+fasting blood sugar > 120 mg/dl
+resting electrocardiographic results (values 0,1,2)
+maximum heart rate achieved
+exercise induced angina
+oldpeak = ST depression induced by exercise relative to rest
+the slope of the peak exercise ST segment
+number of major vessels (0-3) colored by flourosopy
+thal: 0 = normal; 1 = fixed defect; 2 = reversable defect
+The names and social security numbers of the patients were recently removed from the database, replaced with dummy values.
+
+
+          </p>
+         
+          <br><br>
+
+          <div class="container">
+            <div class="custom_heading-container ">
+              <h3>
+               Accuracy result of different Models applied on dataset 
+              </h3>
+            </div>
+      
+            <div class="img-box">
+              <img src="/static/images/r1.png"  height="300px" width="400px" alt="">
+            </div>
+            <div class="detail-box">
+              <p align="justify">
+                <pre>
+                Srno.       Models 	              Accuracy
+                0 	Logistic regression 	        0.786885
+                1 	Support Vector Machine (SVM) 	0.816066
+                2 	K-Nearest Neighbor(KNN)     	0.737705
+                3 	Decision Tree Algorithm     	0.721311
+                4 	Random Forest                	0.836066
+                5 	Gradient Boosting Algorithm 	0.803279
+              </pre>
+              </p>
+             
+              <br><br>
+
+
+
+          <div class="custom_heading-container ">
+            <h3>
+                Artificial Neural Network
+            </h3>
+          </div>
+
+      <div class="img-box">
+        <img src="/static/images/ann.jpg"  height="300px" width="400px" alt="">
+      </div>
+      <div class="detail-box">
+        <p align="justify">
+          Artificial Neural Networks (ANNs) are powerful models designed for both Classification and Regression tasks, excelling at recognizing patterns and handling large datasets with high dimensionality. By learning complex relationships in the data, ANNs enhance accuracy and effectively minimize the risk of overfitting. Composed of interconnected layers of neurons, each layer processes input and passes it to the next, enabling the model to capture both simple and intricate patterns. For optimal performance, the input data must be preprocessed and scaled appropriately, and the architecture, including the number of layers and neurons, should be tailored to the specific problem.:
+
+        There should be some actual values in the feature variable of the dataset so that the classifier can predict accurate results rather than a guessed result.
+        
+        </p>
+        <br><br>
+
+        
+
+        <div class="custom_heading-container ">
+          <h3>
+              Feature Selection 
+          </h3>
+        </div>
+
+    <div class="img-box">
+      <img src="/static/images/fs1.png"  height="300px" width="400px" alt=""> <br>
+      <img src="/static/images/fs2.png"  height="300px" width="400px" alt=""> <br>
+    </div>
+    <div class="detail-box">
+      <p align="justify">
+        Random Forest is capable of performing both Classification and Regression tasks.
+        It is capable of handling large datasets with high dimensionality.
+        It enhances the accuracy of the model and prevents the overfitting issue.
+        Since the random forest combines multiple trees to predict the class of the dataset, it is possible that some decision trees may predict the correct output, while others may not. But together, all the trees predict the correct output. Therefore, below are two assumptions for a better Random forest classifier:
+
+      There should be some actual values in the feature variable of the dataset so that the classifier can predict accurate results rather than a guessed result.
+      The predictions from each tree must have very low correlations.
+      </p>
+      <br><br>
+
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : Gender 
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/sex.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+          We notice, that females are more likely to have heart problems than males
+        </p>
+      <br><br>
+
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : Chest Pain Type'
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/cp.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+        We notice, that chest pain of '0', i.e. the ones with typical angina are much less likely to have heart problems
+        </p>
+      <br><br>
+
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : Resting Electrocardiographic Results
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/restecg.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+          We realize that people with restecg '1' and '0' are much more likely to have a heart disease than with restecg '2'
+        </p>
+      <br><br>
+
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : Resting Electrocardiographic Results
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/exang.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+          We realize that people with restecg '1' and '0' are much more likely to have a heart disease than with restecg '2'
+        </p>
+      <br><br>
+      
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : the slope of the peak exercise ST segment
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/slope.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+         We observe, that Slope '2' causes heart pain much more than Slope '0' and '1'
+        </p>
+      <br><br>
+
+            
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : the slope of the peak exercise ST segment
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/ca.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify">
+        ca=4 has astonishingly large number of heart patients
+                </p>
+      <br><br>
+
+            
+      <div class="custom_heading-container ">
+        <h3>
+            Feature : Thal
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/thal.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+     
+       <br> <br>
+
+           
+       <div class="custom_heading-container ">
+        <h3>
+            Model Learning after Least Attribute dataset
+        </h3>
+      </div>
+      <div class="img-box">
+        <img src="/static/images/r2.png"  height="300px" width="400px" alt=""> <br>
+       </div>
+      <div class="detail-box">
+        <p align="justify"> <pre>
+       
+       
+        The accuracy score achieved using Logistic Regression is: 85.25 %
+        The accuracy score achieved using Naive Bayes is: 85.25 %
+        The accuracy score achieved using Support Vector Machine is: 81.97 %
+        The accuracy score achieved using K-Nearest Neighbors is: 67.21 %
+        The accuracy score achieved using Decision Tree is: 81.97 %
+        The accuracy score achieved using Random Forest is: 95.08 %
+        The accuracy score achieved using XGBoost is: 85.25 %
+        The accuracy score achieved using Neural Network is: 80.33 %
+      </pre> </p>
+        <br><br>
+
+
+     
+
+        
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- info section -->
+  
+
+ 
+
+ 
+
+  <script type="text/javascript" src="static/js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js">
+  </script>
+  <script type="text/javascript">
+    $(".owl-carousel").owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: true,
+      navText: [],
+      autoplay: true,
+      responsive: {
+        0: {
+          items: 1
+        },
+        600: {
+          items: 2
+        },
+        1000: {
+          items: 4
+        }
+      }
+    });
+  </script>
+  <script type="text/javascript">
+    $(".owl-2").owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: true,
+      navText: [],
+      autoplay: true,
+
+      responsive: {
+        0: {
+          items: 1
+        },
+        600: {
+          items: 2
+        },
+        1000: {
+          items: 4
+        }
+      }
+    });
+  </script>
+  
+</body>
+
+</html>

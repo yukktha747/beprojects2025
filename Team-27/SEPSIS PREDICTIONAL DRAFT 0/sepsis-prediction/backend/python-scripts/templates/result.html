@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Sepsis Risk Assessment Results</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-{{ 'danger' if result.prediction == 1 else 'success' }}">
+                    <h4 class="text-center">
+                        {% if result.prediction == 1 %}
+                            Potential Sepsis Detected
+                        {% else %}
+                            No Sepsis Detected
+                        {% endif %}
+                    </h4>
+                </div>
+
+                <div class="result-details">
+                    <p><strong>Risk Level:</strong> 
+                        <span class="badge bg-{{ 
+                            'danger' if result.risk_level == 'High' 
+                            else 'warning' if result.risk_level == 'Medium' 
+                            else 'success' 
+                        }}">
+                            {{ result.risk_level }}
+                        </span>
+                    </p>
+                    <p><strong>Probability:</strong> {{ "%.1f"|format(result.probability) }}%</p>
+                    
+                    <div class="feature-importance mt-4">
+                        <h5>Feature Importance:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for feature, importance in result.feature_importance %}
+                                    <tr>
+                                        <td>{{ feature }}</td>
+                                        <td>{{ "%.3f"|format(importance) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('home') }}" class="btn btn-primary">Calculate Again</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

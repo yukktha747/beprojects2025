@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Model Features Information</h2>
+    
+    {% if features_info %}
+        <h3>Base Features ({{ features_info.base_features|length }})</h3>
+        <ul class="list-group mb-4">
+            {% for feature in features_info.base_features %}
+            <li class="list-group-item">{{ feature }}</li>
+            {% endfor %}
+        </ul>
+
+        {% if features_info.engineered_features %}
+        <h3>Engineered Features ({{ features_info.engineered_features|length }})</h3>
+        <ul class="list-group mb-4">
+            {% for feature in features_info.engineered_features %}
+            <li class="list-group-item">{{ feature }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="alert alert-info">
+            Final number of features: {{ features_info.final_dimension }}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            Unable to retrieve feature information
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 
