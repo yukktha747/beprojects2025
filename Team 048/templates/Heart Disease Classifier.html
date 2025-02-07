@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>Cardio Care</title>
+
+    <!-- slider stylesheet -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css"
+    />
+
+    <!-- font awesome style -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
+
+    <!-- fonts style -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,600,700|Roboto:400,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="static/css/style.css" rel="stylesheet" />
+    <!-- responsive style -->
+    <link href="static/css/responsive.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Javascript Form Validation -->
+    <script>
+      // Validation function
+      function validateForm() {
+        var exang = document.myform.exang.value;
+        var sex = document.myform.sex.value;
+        var oldpeak = document.myform.oldpeak.value;
+        var name = document.myform.name.value;
+        var email = document.myform.emailid.value;
+        var mo = document.myform.mo.value;
+
+        let exangValue = parseInt(exang, 10);
+
+        // Validate Exercise-Induced Angina (exang) value
+        if (exangValue < 0 || exangValue >= 6) {
+          document.getElementById("innerexang").innerHTML =
+            " ** Please Enter the value between 0 and 6";
+          return false; // Prevent form submission if validation fails
+        }
+
+        // Validate Mobile Number Length
+        if (mo.length != 10) {
+          document.getElementById("innermo").innerHTML =
+            " ** Please Enter 10 Digit Mobile Number";
+          return false;
+        }
+
+        // Validate Email format
+        if (email.indexOf("@") <= 1) {
+          document.getElementById("inneremail").innerHTML =
+            " ** @ is in Invalid position";
+          return false;
+        }
+
+        // If all validations pass
+        return true;
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="hero_area">
+      <!-- header section starts -->
+      <header class="header_section">
+        <div class="container-fluid">
+          <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+            <a class="navbar-brand" href="/">
+              <img src="/static/images/l.webp" alt="" />
+              <span> CardioCare </span>
+            </a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <div
+                class="d-flex flex-column flex-lg-row align-items-center w-100 justify-content-between"
+              >
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="/"
+                      >Home <span class="sr-only">(current)</span></a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/about"> About </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/contactus"
+                      >Cardio Care Details</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/predict">
+                      Predict Heart Disease</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!-- end header section -->
+
+      <!-- Start of Form Section -->
+      <div class="container">
+        <br />
+        <center>
+          <form
+            method="POST"
+            action="/predict"
+            name="myform"
+            onsubmit="return validateForm()"
+          >
+            <fieldset>
+              <div class="card card-body">
+                <center>
+                  <h1><b>Heart Disease Test Form</b></h1>
+                </center>
+                <br /><br />
+                <div class="form-group row">
+                  <label for="age">Age</label>
+                  <input
+                    type="text"
+                    name="age"
+                    placeholder="Age"
+                    required
+                    class="form-control"
+                  />
+                  <label for="sex">Sex</label>
+                  <input
+                    type="text"
+                    name="sex"
+                    placeholder="Sex"
+                    required
+                    class="form-control"
+                  />
+                  <label for="cp">Chest Pain Type</label>
+                  <input
+                    type="text"
+                    name="cp"
+                    placeholder="Chest Pain Type"
+                    required
+                    class="form-control"
+                  />
+                  <label for="trestbps">Resting Blood Pressure</label>
+                  <input
+                    type="text"
+                    name="trestbps"
+                    placeholder="Resting Blood Pressure"
+                    required
+                    class="form-control"
+                  />
+                  <label for="chol">Cholesterol</label>
+                  <input
+                    type="text"
+                    name="chol"
+                    placeholder="Cholesterol"
+                    required
+                    class="form-control"
+                  />
+                  <label for="fbs">Fasting Blood Sugar</label>
+                  <input
+                    type="text"
+                    name="fbs"
+                    placeholder="Fasting Blood Sugar"
+                    required
+                    class="form-control"
+                  />
+                  <label for="restecg">Resting ECG Results</label>
+                  <input
+                    type="text"
+                    name="restecg"
+                    placeholder="Resting ECG Results"
+                    required
+                    class="form-control"
+                  />
+                  <label for="thalach">Max Heart Rate Achieved</label>
+                  <input
+                    type="text"
+                    name="thalach"
+                    placeholder="Max Heart Rate Achieved"
+                    required
+                    class="form-control"
+                  />
+                  <label for="exang">Exercise-Induced Angina</label>
+                  <input
+                    type="text"
+                    name="exang"
+                    placeholder="Exercise-Induced Angina"
+                    required
+                    class="form-control"
+                  />
+                  <label for="oldpeak"
+                    >Depression Induced by Exercise Relative to Rest</label
+                  >
+                  <input
+                    type="text"
+                    name="oldpeak"
+                    placeholder="Depression Induced by Exercise Relative to Rest"
+                    required
+                    class="form-control"
+                  />
+                  <label for="slope"
+                    >Slope of the Peak Exercise ST Segment</label
+                  >
+                  <input
+                    type="text"
+                    name="slope"
+                    placeholder="Slope of the Peak Exercise ST Segment"
+                    required
+                    class="form-control"
+                  />
+                  <label for="ca"
+                    >Number of Major Vessels Colored by Fluoroscopy</label
+                  >
+                  <input
+                    type="text"
+                    name="ca"
+                    placeholder="Number of Major Vessels Colored by Fluoroscopy"
+                    required
+                    class="form-control"
+                  />
+                  <label for="thal">Thalassemia</label>
+                  <input
+                    type="text"
+                    name="thal"
+                    placeholder="Thalassemia"
+                    required
+                    class="form-control"
+                  />
+                  <label for="name">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter Your Name"
+                    class="form-control"
+                    required
+                  />
+                  <span id="innername"></span><br />
+
+                  <label for="emailid">Email</label>
+                  <input
+                    type="email"
+                    name="emailid"
+                    placeholder="Enter Your Email"
+                    class="form-control"
+                    required
+                  />
+                  <span id="inneremail"></span><br />
+
+                  <label for="mo">Mobile Number</label>
+                  <input
+                    type="text"
+                    name="mo"
+                    placeholder="Enter Mobile Number"
+                    class="form-control"
+                    required
+                  />
+                  <span id="innermo"></span><br />
+                </div>
+                <br />
+                <input
+                  type="submit"
+                  value="Submit"
+                  class="btn btn-primary btn-block"
+                />
+              </div>
+            </fieldset>
+          </form>
+        </center>
+      </div>
+    </div>
+  </body>
+</html>
